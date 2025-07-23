@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quêtes{% endblock %}
+
+{% block body %}
+<div class="inventory-wrapper">
+    <h1>Quêtes</h1>
+
+    {% for quest in quests %}
+        <div class="item" style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h3>{{ quest.name }}</h3>
+                <p><strong>Objectif :</strong> {{ quest.objectif }}</p>
+                {% if quest.information %}
+                    <p><strong>Informations supplémentaires :</strong> {{ quest.information }}</p>
+                {% endif %}
+                {% if quest.origine %}
+                    <p><strong>Origine :</strong> {{ quest.origine }}</p>
+                {% endif %}
+            </div>
+
+            <div style="white-space: nowrap;">
+                <a href="{{ path('quest_edit', {'id': quest.id}) }}" 
+                   title="Modifier" 
+                   class="text-warning" 
+                   style="font-size: 1.2rem; text-decoration: none; margin-right: 0.5rem;">
+                    ✏️
+                </a>
+                <form method="post" action="{{ path('quest_delete', {'id': quest.id}) }}" 
+                      style="display:inline;" 
+                      onsubmit="return confirm('Supprimer cette quête ?');">
+                    <button type="submit" 
+                            title="Supprimer" 
+                            class="btn btn-link p-0 text-danger" 
+                            style="font-size: 1.2rem; text-decoration: none;">
+                        🗑️
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p>Aucune quête disponible.</p>
+    {% endfor %}
+</div>
+{% endblock %}

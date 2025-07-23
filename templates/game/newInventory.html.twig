@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ item is defined ? 'Modifier un objet' : 'Ajouter un objet' }}
+{% endblock %}
+
+{% block body %}
+<div class="register-container">
+    <h1>{{ item is defined ? 'Modifier un objet' : 'Ajouter un objet' }}</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="name">Nom de l’objet</label>
+            <input type="text" id="name" name="name" class="form-control" required value="{{ item.name ?? '' }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" required>{{ item.description ?? '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="additionalInfo">Infos supplémentaires (facultatif)</label>
+            <textarea id="additionalInfo" name="additionalInfo" class="form-control">{{ item.additionalInfo ?? '' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn">{{ item is defined ? '💾 Enregistrer les modifications' : '➕ Ajouter à l’inventaire' }}</button>
+        <a href="{{ path('inventory_list') }}" class="btn mt-2" style="background-color: transparent; color: #d6c28c;">← Retour</a>
+    </form>
+</div>
+{% endblock %}

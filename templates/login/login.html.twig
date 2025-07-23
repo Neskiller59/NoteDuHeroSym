@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div class="login-container">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="logged-info">
+            Connecté en tant que {{ app.user.userIdentifier }} 
+            <a href="{{ path('app_logout') }}" class="text-warning text-decoration-underline">Se déconnecter</a>
+        </div>
+    {% endif %}
+
+    <h1>Connexion à la Guilde</h1>
+
+    <form method="post" action="{{ path('app_login') }}">
+        <label for="username">Nom d'aventurier</label>
+        <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
+
+        <label for="password">Mot de passe secret</label>
+        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        {# Optionnel : se souvenir de moi #}
+        {#
+        <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" name="_remember_me" id="_remember_me">
+            <label class="form-check-label" for="_remember_me">Se souvenir de moi</label>
+        </div>
+        #}
+
+        <button class="btn btn-login" type="submit">Entrer dans la Guilde</button>
+    </form>
+</div>
+{% endblock %}

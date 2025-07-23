@@ -1,3 +1,198 @@
-body {
-    background-color: skyblue;
-}
+ body {
+        background: url('https://images.unsplash.com/photo-1532153955177-f59af40d6472?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+        background-size: cover;
+        color: #f5f3e7;
+        font-family: 'Uncial Antiqua', serif;
+    }
+
+    .jdr-wrapper {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 3rem;
+        background-color: rgba(20, 20, 20, 0.85);
+        border: 3px solid #bfa76f;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255, 238, 200, 0.5);
+        text-align: center;
+    }
+
+    .jdr-wrapper h1 {
+        font-size: 3rem;
+        color: #f5e8c8;
+        margin-bottom: 1.5rem;
+    }
+
+    .jdr-wrapper p {
+        font-size: 1.25rem;
+        line-height: 1.8;
+    }
+
+    .btn-quest {
+        margin-top: 2rem;
+        background-color: #bfa76f;
+        border: none;
+        color: #1a1a1a;
+        font-size: 1.1rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        transition: 0.3s ease;
+        font-family: 'Uncial Antiqua', serif;
+    }
+
+    .btn-quest:hover {
+        background-color: #d1b97a;
+        color: #000;
+    }
+
+    .icon {
+        width: 60px;
+        margin-bottom: 1rem;
+    }
+    .register-container {
+        max-width: 500px;
+        margin: 3rem auto;
+        background: rgba(30, 20, 10, 0.9);
+        padding: 2.5rem;
+        border-radius: 15px;
+        border: 2px solid #c9ab6b;
+        box-shadow: 0 0 20px rgba(255, 238, 200, 0.4);
+    }
+
+    .register-container h1 {
+        text-align: center;
+        color: #e7d7b9;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+    }
+
+    label {
+        color: #f8e6be;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background-color: #3e3223;
+        color: #f0eadd;
+        border: 1px solid #a98b57;
+        font-family: 'Uncial Antiqua', serif;
+    }
+
+    .form-check-input {
+        background-color: #3e3223;
+        border: 1px solid #a98b57;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        background-color: #c9ab6b;
+        color: #1c1c1c;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-family: 'Uncial Antiqua', serif;
+        transition: background-color 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .btn:hover {
+        background-color: #e0c488;
+        color: #000;
+    }
+
+    .form-error-message {
+        color: #f99;
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+      .login-container {
+        max-width: 500px;
+        margin: 4rem auto;
+        background: rgba(25, 18, 10, 0.92);
+        padding: 2.5rem;
+        border-radius: 15px;
+        border: 2px solid #c0a76d;
+        box-shadow: 0 0 15px rgba(255, 238, 200, 0.4);
+    }
+
+    .login-container h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2.2rem;
+        color: #e9d6b3;
+    }
+
+    label {
+        display: block;
+        margin-top: 1rem;
+        margin-bottom: 0.3rem;
+        color: #f9e9c1;
+        font-size: 1.1rem;
+    }
+
+    .form-control {
+        background-color: #3e3223;
+        color: #f3e7c9;
+        border: 1px solid #a98b57;
+        font-family: 'Uncial Antiqua', serif;
+    }
+
+    .btn-login {
+        width: 100%;
+        margin-top: 2rem;
+        background-color: #c9ab6b;
+        color: #1c1c1c;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        font-family: 'Uncial Antiqua', serif;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background-color: #e0c488;
+        color: #000;
+    }
+
+    .alert-danger {
+        background-color: #5c2e2e;
+        color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 1rem;
+        border-radius: 10px;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+
+    .logged-info {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        color: #d2b981;
+        text-align: center;
+    }
+     .inventory-wrapper {
+        max-width: 800px;
+        margin: 4rem auto;
+        padding: 3rem;
+        background-color: rgba(25, 18, 10, 0.92);
+        border: 2px solid #c0a76d;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(255, 238, 200, 0.4);
+    }
+
+    .inventory-wrapper h1 {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #e9d6b3;
+        margin-bottom: 2rem;
+    }
+
+    .item {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #a98b57;
+        border-radius: 8px;
+    }

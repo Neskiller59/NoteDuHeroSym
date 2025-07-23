@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inventaire{% endblock %}
+
+{% block body %}
+<div class="inventory-wrapper">
+    <h1>Inventaire</h1>
+
+    {% for item in items %}
+        <div class="item" style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h3>{{ item.name }}</h3>
+                <p><strong>Description :</strong> {{ item.description }}</p>
+                {% if item.additionalInfo %}
+                    <p><strong>Infos supplémentaires :</strong> {{ item.additionalInfo }}</p>
+                {% endif %}
+            </div>
+
+            <div style="white-space: nowrap;">
+                <a href="{{ path('inventory_edit', {'id': item.id}) }}" 
+                   title="Modifier" 
+                   class="text-warning" 
+                   style="font-size: 1.2rem; text-decoration: none; margin-right: 0.5rem;">
+                    ✏️
+                </a>
+                <form method="post" action="{{ path('inventory_delete', {'id': item.id}) }}" 
+                      style="display:inline;" 
+                      onsubmit="return confirm('Supprimer cet objet ?');">
+                    <button type="submit" 
+                            title="Supprimer" 
+                            class="btn btn-link p-0 text-danger" 
+                            style="font-size: 1.2rem; text-decoration: none;">
+                        🗑️
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p>Aucun objet dans l'inventaire.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue, Aventurier{% endblock %}
+
+{% block body %}
+<!-- Police médiévale Google Fonts -->
+
+
+
+<div class="jdr-wrapper">
+    <img src="https://cdn-icons-png.flaticon.com/512/7734/7734539.png" alt="Icône d'épée" class="icon" />
+    <h1>Bienvenue, {{ app.user ? app.user.username : 'aventurier' }}</h1>
+    <p>
+        Tu pénètres dans un royaume oublié, où les anciens secrets dorment encore sous la brume...
+        <br>
+        Prépare ton équipement, forge ton destin, et choisis ta voie : mage, rôdeur, guerrier ou voleur.
+    </p>
+
+    
+</div>
+{% endblock %}
