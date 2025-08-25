@@ -9,13 +9,22 @@
         <div class="collapse navbar-collapse" id="navMain">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}" href="{{ path('app_home') }}">Accueil</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}" 
+                       href="{{ path('app_home') }}">
+                        Accueil
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'inventory_list' %}active{% endif %}" href="{{ path('inventory_list') }}">Inventaire</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'inventory_' %}active{% endif %}" 
+                       href="{{ path('inventory_list') }}">
+                        Inventaire
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_quest' %}active{% endif %}" href="{{ path('app_quest') }}">Quêtes</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'quest_' %}active{% endif %}" 
+                       href="{{ path('quest_index') }}">
+                        Quêtes
+                    </a>
                 </li>
             </ul>
 

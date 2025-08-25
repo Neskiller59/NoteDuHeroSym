@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Quête{% endblock %}
+
+{% block body %}
+<div class="inventory-wrapper">
+    <h1>Ajouter une nouvelle quête</h1>
+
+    <form method="post" action="{{ path('quest_new') }}">
+        <div class="form-group mb-2">
+            <label for="name">Nom de la quête</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="objectif">Objectif</label>
+            <textarea name="objectif" id="objectif" class="form-control" required></textarea>
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="information">Informations supplémentaires</label>
+            <textarea name="information" id="information" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="origine">Origine</label>
+            <input type="text" name="origine" id="origine" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2">Ajouter la quête</button>
+    </form>
+</div>
+{% endblock %}

@@ -6,8 +6,10 @@
 <div class="inventory-wrapper">
     <h1>Quêtes</h1>
 
+    <a href="{{ path('quest_new') }}" class="btn btn-success mb-3">➕ Nouvelle Quête</a>
+
     {% for quest in quests %}
-        <div class="item" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div class="item" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
             <div>
                 <h3>{{ quest.name }}</h3>
                 <p><strong>Objectif :</strong> {{ quest.objectif }}</p>
@@ -20,21 +22,9 @@
             </div>
 
             <div style="white-space: nowrap;">
-                <a href="{{ path('quest_edit', {'id': quest.id}) }}" 
-                   title="Modifier" 
-                   class="text-warning" 
-                   style="font-size: 1.2rem; text-decoration: none; margin-right: 0.5rem;">
-                    ✏️
-                </a>
-                <form method="post" action="{{ path('quest_delete', {'id': quest.id}) }}" 
-                      style="display:inline;" 
-                      onsubmit="return confirm('Supprimer cette quête ?');">
-                    <button type="submit" 
-                            title="Supprimer" 
-                            class="btn btn-link p-0 text-danger" 
-                            style="font-size: 1.2rem; text-decoration: none;">
-                        🗑️
-                    </button>
+                <a href="{{ path('quest_edit', {'id': quest.id}) }}" class="text-warning me-2">✏️</a>
+                <form method="post" action="{{ path('quest_delete', {'id': quest.id}) }}" style="display:inline;" onsubmit="return confirm('Supprimer cette quête ?');">
+                    <button type="submit" class="btn btn-link p-0 text-danger">🗑️</button>
                 </form>
             </div>
         </div>

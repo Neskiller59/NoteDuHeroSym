@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\QuestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuestRepository::class)]
 class Quest
@@ -15,9 +16,11 @@ class Quest
     private ?int $id = null;
 
     #[ORM\Column(length: 300)]
+    #[Assert\NotBlank(message: "Le nom de la quête est obligatoire.")]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "L'objectif est obligatoire.")]
     private ?string $objectif = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -25,6 +28,12 @@ class Quest
 
     #[ORM\Column(length: 300, nullable: true)]
     private ?string $origine = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
+
+    // ===== Getters et Setters =====
 
     public function getId(): ?int
     {
@@ -39,7 +48,6 @@ class Quest
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -51,7 +59,6 @@ class Quest
     public function setObjectif(string $objectif): static
     {
         $this->objectif = $objectif;
-
         return $this;
     }
 
@@ -63,7 +70,6 @@ class Quest
     public function setInformation(?string $information): static
     {
         $this->information = $information;
-
         return $this;
     }
 
@@ -75,7 +81,17 @@ class Quest
     public function setOrigine(?string $origine): static
     {
         $this->origine = $origine;
+        return $this;
+    }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }
