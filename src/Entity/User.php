@@ -23,31 +23,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $username = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(length: 300)]
     private ?string $email = null;
 
-    /**
-     * @var Collection<int, Inventory>
-     */
     #[ORM\OneToMany(targetEntity: Inventory::class, mappedBy: 'user')]
     private Collection $inventories;
+
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Quest::class, cascade: ["persist", "remove"])]
+    private Collection $quests;
 
     public function __construct()
     {
         $this->inventories = new ArrayCollection();
+        $this->quests = new ArrayCollection();
     }
+
+    // === Getters / Setters existants ===
 
     public function getId(): ?int
     {
@@ -62,45 +59,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->username;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -109,25 +88,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
         return $data;
     }
 
     #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
     }
 
     public function getEmail(): ?string
@@ -138,13 +111,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Inventory>
-     */
+    // === Inventories ===
     public function getInventories(): Collection
     {
         return $this->inventories;
@@ -156,19 +126,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->inventories->add($inventory);
             $inventory->setUser($this);
         }
-
         return $this;
     }
 
     public function removeInventory(Inventory $inventory): static
     {
         if ($this->inventories->removeElement($inventory)) {
-            // set the owning side to null (unless already changed)
             if ($inventory->getUser() === $this) {
                 $inventory->setUser(null);
             }
         }
+        return $this;
+    }
 
+    // === Quests ===
+    /**
+     * @return Collection<int, Quest>
+     */
+    public function getQuests(): Collection
+    {
+        return $this->quests;
+    }
+
+    public function addQuest(Quest $quest): static
+    {
+        if (!$this->quests->contains($quest)) {
+            $this->quests->add($quest);
+            $quest->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeQuest(Quest $quest): static
+    {
+        if ($this->quests->removeElement($quest)) {
+            if ($quest->getUser() === $this) {
+                $quest->setUser(null);
+            }
+        }
         return $this;
     }
 }

@@ -14,6 +14,9 @@ class QuestController extends AbstractController
     #[Route('/quest/', name: 'quest_index')]
     public function index(EntityManagerInterface $em): Response
     {
+        // Accès réservé aux utilisateurs connectés
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $quests = $em->getRepository(Quest::class)->findAll();
         return $this->render('quest/index.html.twig', ['quests' => $quests]);
     }
@@ -21,6 +24,8 @@ class QuestController extends AbstractController
     #[Route('/quest/{id}/edit', name: 'quest_edit')]
     public function edit(int $id, Request $request, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $quest = $em->getRepository(Quest::class)->find($id);
         if (!$quest) {
             throw $this->createNotFoundException('Quête introuvable');
@@ -42,6 +47,8 @@ class QuestController extends AbstractController
     #[Route('/quest/{id}', name: 'quest_delete', methods:['POST'])]
     public function delete(int $id, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $quest = $em->getRepository(Quest::class)->find($id);
         if ($quest) {
             $em->remove($quest);
