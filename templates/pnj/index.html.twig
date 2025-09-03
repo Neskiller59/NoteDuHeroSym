@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les PNJ{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 text-gold" style="text-shadow: 2px 2px 4px #000;">Les PNJ</h1>
+        <a href="{{ path('pnj_new') }}" class="btn btn-gold shadow-sm">Créer un PNJ</a>
+    </div>
+
+    {% if pnjs is empty %}
+        <div class="alert alert-dark text-gold border-gold">Aucun PNJ trouvé dans ce royaume.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" style="background: rgba(20,20,40,0.8); color: #f5e1a4; border: 2px solid #f5e1a4;">
+                <thead style="background: rgba(50,30,0,0.9); color: #ffd700; font-weight: bold; text-shadow: 1px 1px 2px #000;">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Localisation</th>
+                        <th>Personnalité</th>
+                        <th>Compétences</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pnj in pnjs %}
+                        <tr style="border-bottom: 1px solid #f5e1a4;">
+                            <td>{{ pnj.name }}</td>
+                            <td>{{ pnj.description|length > 50 ? pnj.description|slice(0, 50) ~ '...' : pnj.description }}</td>
+                            <td>{{ pnj.localisation }}</td>
+                            <td>{{ pnj.personaliter|length > 50 ? pnj.personaliter|slice(0, 50) ~ '...' : pnj.personaliter }}</td>
+                            <td>{{ pnj.competence|length > 50 ? pnj.competence|slice(0, 50) ~ '...' : pnj.competence }}</td>
+                            <td class="text-end">
+                                <a href="{{ path('pnj_edit', {id: pnj.id}) }}" class="btn btn-primary btn-sm shadow-sm me-1" style="background: linear-gradient(to right, #8b4513, #d2b48c); border: none;">Éditer</a>
+                                <form method="post" action="{{ path('pnj_delete', {id: pnj.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment bannir ce PNJ ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
+                                    <button class="btn btn-danger btn-sm shadow-sm" style="background: linear-gradient(to right, #800000, #ff4d4d); border: none;" type="submit">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-gold { color: #f5e1a4 !important; }
+    .btn-gold {
+        background: linear-gradient(to right, #ffd700, #f5e1a4);
+        color: #000;
+        font-weight: bold;
+        border: 2px solid #f5e1a4;
+        text-shadow: 1px 1px 2px #000;
+    }
+    .btn-gold:hover {
+        background: linear-gradient(to right, #f5e1a4, #ffd700);
+        color: #000;
+        transform: scale(1.05);
+        transition: 0.2s;
+    }
+    table tbody tr:hover {
+        background: rgba(255, 215, 0, 0.2);
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les PNJ{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="font-family: 'Arial', sans-serif;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        
+        <a href="{{ path('pnj_new') }}" class="btn btn-add">➕ Ajouter un PNJ</a>
+    </div>
+
+    {% if pnjs is empty %}
+        <div class="alert text-center">
+            Aucun PNJ trouvé.
+        </div>
+    {% else %}
+        <div class="row g-4">
+            {% for pnj in pnjs %}
+                {% set desc = pnj.description %}
+                {% set perso = pnj.personaliter %}
+                {% set comp = pnj.competence %}
+                <div class="col-md-4">
+                    <div class="card card-pnj shadow-sm">
+                        <div class="card-header text-center card-header-pnj">
+                            <h3 class="card-title">{{ pnj.name }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <p> <strong>Description:</strong> {{ desc|length > 100 ? desc[:100] ~ '...' : desc }}</p>
+                            <p> <strong>Localisation:</strong> {{ pnj.localisation|default('Inconnue') }}</p>
+                            <p> <strong>Personnalité:</strong> {{ perso|length > 100 ? perso[:100] ~ '...' : perso|default('Aucune') }}</p>
+                            <p> <strong>Compétences:</strong> {{ comp|length > 100 ? comp[:100] ~ '...' : comp|default('Aucune') }}</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-center gap-2">
+                            <a href="{{ path('pnj_edit', {'id': pnj.id}) }}" class="btn btn-edit">Éditer</a>
+                            <form method="post" action="{{ path('pnj_delete', {'id': pnj.id}) }}" onsubmit="return confirm('Voulez-vous supprimer ce PNJ ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
+                                <button type="submit" class="btn btn-delete">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+/* Carte PNJ attractive */
+.card-pnj {
+    border: 2px solid #180202ff;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.card-pnj:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(108,99,255,0.4);
+}
+
+.card-header-pnj {
+    background: #0a0a0cff;
+    color: #fff;
+    padding: 0.8rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.card-title {
+    margin: 0;
+}
+
+.card-body p {
+    margin-bottom: 0.5rem;
+}
+
+.btn-edit, .btn-delete, .btn-add {
+    border-radius: 6px;
+    font-weight: bold;
+    padding: 0.3rem 0.8rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-edit {
+    background-color: #4d3636ff;
+    color: #fff;
+    border: none;
+}
+.btn-edit:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(75,73,209,0.5);
+}
+
+.btn-delete {
+    background-color: #d14b4b;
+    color: #fff;
+    border: none;
+}
+.btn-delete:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(209,75,75,0.5);
+}
+
+.btn-add {
+    background-color: #156909ff;
+    color: #fff;
+    border: none;
+    
+}
+.btn-add:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(75,73,209,0.5);
+}
+</style>
+{% endblock %}

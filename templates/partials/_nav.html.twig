@@ -26,6 +26,12 @@
                         Quêtes
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'pnj_' %}active{% endif %}" 
+                       href="{{ path('pnj_list') }}">
+                        PNJ
+                    </a>
+                </li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
