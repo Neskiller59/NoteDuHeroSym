@@ -5,7 +5,6 @@
 {% block body %}
 <div class="container mt-5" style="font-family: 'Arial', sans-serif;">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        
         <a href="{{ path('pnj_new') }}" class="btn btn-add">➕ Ajouter un PNJ</a>
     </div>
 
@@ -19,16 +18,18 @@
                 {% set desc = pnj.description %}
                 {% set perso = pnj.personaliter %}
                 {% set comp = pnj.competence %}
+                {% set info = pnj.information %}
                 <div class="col-md-4">
                     <div class="card card-pnj shadow-sm">
                         <div class="card-header text-center card-header-pnj">
                             <h3 class="card-title">{{ pnj.name }}</h3>
                         </div>
                         <div class="card-body">
-                            <p> <strong>Description:</strong> {{ desc|length > 100 ? desc[:100] ~ '...' : desc }}</p>
-                            <p> <strong>Localisation:</strong> {{ pnj.localisation|default('Inconnue') }}</p>
-                            <p> <strong>Personnalité:</strong> {{ perso|length > 100 ? perso[:100] ~ '...' : perso|default('Aucune') }}</p>
-                            <p> <strong>Compétences:</strong> {{ comp|length > 100 ? comp[:100] ~ '...' : comp|default('Aucune') }}</p>
+                            <p><strong>Description:</strong> {{ desc|default('Aucune') }}</p>
+                            <p><strong>Localisation:</strong> {{ pnj.localisation|default('Inconnue') }}</p>
+                            <p><strong>Personnalité:</strong> {{ perso|default('Aucune') }}</p>
+                            <p><strong>Compétences:</strong> {{ comp|default('Aucune') }}</p>
+                            <p><strong>Informations supplémentaires:</strong> {{ info|default('Aucune') }}</p>
                         </div>
                         <div class="card-footer d-flex justify-content-center gap-2">
                             <a href="{{ path('pnj_edit', {'id': pnj.id}) }}" class="btn btn-edit">Éditer</a>
@@ -51,6 +52,7 @@
     border-radius: 12px;
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.3s;
+    word-wrap: break-word; /* Texte passe à la ligne automatiquement */
 }
 
 .card-pnj:hover {
@@ -72,6 +74,7 @@
 
 .card-body p {
     margin-bottom: 0.5rem;
+    white-space: pre-wrap; /* Permet les retours à la ligne automatiques */
 }
 
 .btn-edit, .btn-delete, .btn-add {
@@ -105,7 +108,6 @@
     background-color: #156909ff;
     color: #fff;
     border: none;
-    
 }
 .btn-add:hover {
     transform: scale(1.05);

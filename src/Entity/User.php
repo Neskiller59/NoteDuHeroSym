@@ -38,10 +38,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "user", targetEntity: Quest::class, cascade: ["persist", "remove"])]
     private Collection $quests;
 
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Competence::class, cascade: ["persist", "remove"])]
+    private Collection $competences;
+
     public function __construct()
     {
         $this->inventories = new ArrayCollection();
         $this->quests = new ArrayCollection();
+        $this->competences = new ArrayCollection();
     }
 
     // === Getters / Setters existants ===
@@ -162,6 +166,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->quests->removeElement($quest)) {
             if ($quest->getUser() === $this) {
                 $quest->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    // === Competences ===
+    /**
+     * @return Collection<int, Competence>
+     */
+    public function getCompetences(): Collection
+    {
+        return $this->competences;
+    }
+
+    public function addCompetence(Competence $competence): static
+    {
+        if (!$this->competences->contains($competence)) {
+            $this->competences->add($competence);
+            $competence->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeCompetence(Competence $competence): static
+    {
+        if ($this->competences->removeElement($competence)) {
+            if ($competence->getUser() === $this) {
+                $competence->setUser(null);
             }
         }
         return $this;

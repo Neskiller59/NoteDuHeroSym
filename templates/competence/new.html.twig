@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle compétence{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="h2 text-gold mb-4">Créer une nouvelle compétence</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label text-gold">Nom</label>
+            <input type="text" name="name" class="form-control" value="{{ competence.name ?? '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-gold">Description</label>
+            <textarea name="description" class="form-control" rows="4">{{ competence.description ?? '' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-gold">Effet</label>
+            <input type="text" name="effet" class="form-control" value="{{ competence.effet ?? '' }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-gold">Origine</label>
+            <input type="text" name="origine" class="form-control" value="{{ competence.origine ?? '' }}">
+        </div>
+
+        <button type="submit" class="btn btn-gold shadow-sm">Enregistrer</button>
+        <a href="{{ path('competence_list') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

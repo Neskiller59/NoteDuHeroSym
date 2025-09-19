@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow" style="font-family: 'Uncial Antiqua', serif;">
     <div class="container-fluid">
-        <a class="navbar-brand text-warning" href="{{ path('app_home') }}">🛡️ Notes du héro</a>
+        <a class="navbar-brand text-warning" href="{{ path('app_home') }}">🛡️ Notes du héros</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,6 +30,12 @@
                     <a class="nav-link {% if app.request.attributes.get('_route') starts with 'pnj_' %}active{% endif %}" 
                        href="{{ path('pnj_list') }}">
                         PNJ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'competence_' %}active{% endif %}" 
+                       href="{{ path('competence_list') }}">
+                        Compétences
                     </a>
                 </li>
             </ul>

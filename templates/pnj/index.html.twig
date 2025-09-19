@@ -21,6 +21,7 @@
                         <th>Localisation</th>
                         <th>Personnalité</th>
                         <th>Compétences</th>
+                        <th>Informations</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -32,6 +33,7 @@
                             <td>{{ pnj.localisation }}</td>
                             <td>{{ pnj.personaliter|length > 50 ? pnj.personaliter|slice(0, 50) ~ '...' : pnj.personaliter }}</td>
                             <td>{{ pnj.competence|length > 50 ? pnj.competence|slice(0, 50) ~ '...' : pnj.competence }}</td>
+                            <td>{{ pnj.information|length > 50 ? pnj.information|slice(0, 50) ~ '...' : pnj.information }}</td>
                             <td class="text-end">
                                 <a href="{{ path('pnj_edit', {id: pnj.id}) }}" class="btn btn-primary btn-sm shadow-sm me-1" style="background: linear-gradient(to right, #8b4513, #d2b48c); border: none;">Éditer</a>
                                 <form method="post" action="{{ path('pnj_delete', {id: pnj.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment bannir ce PNJ ?');">

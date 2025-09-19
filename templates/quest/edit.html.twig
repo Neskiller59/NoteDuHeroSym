@@ -1,0 +1,35 @@
+{# templates/quest/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Quête{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="h3 mb-4">Modifier la quête : {{ quest.name }}</h1>
+
+    <form method="post" action="{{ path('quest_edit', {'id': quest.id}) }}">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom de la quête</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ quest.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="objectif" class="form-label">Objectif</label>
+            <textarea name="objectif" id="objectif" class="form-control" required>{{ quest.objectif }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="information" class="form-label">Informations supplémentaires</label>
+            <textarea name="information" id="information" class="form-control">{{ quest.information }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="origine" class="form-label">Origine</label>
+            <input type="text" name="origine" id="origine" class="form-control" value="{{ quest.origine }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <a href="{{ path('quest_index') }}" class="btn btn-secondary ms-2">← Retour à la liste</a>
+    </form>
+</div>
+{% endblock %}
