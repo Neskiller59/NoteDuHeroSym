@@ -1,35 +1,36 @@
-{# templates/quest/edit.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier la Quête{% endblock %}
+{% block title %}Modifier Quête{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="h3 mb-4">Modifier la quête : {{ quest.name }}</h1>
+<div class="container mt-4" style="max-width:600px;">
 
-    <form method="post" action="{{ path('quest_edit', {'id': quest.id}) }}">
+    <h1 class="mb-4">Modifier la Quête pour {{ hero.name }}</h1>
+
+    <form method="post">
         <div class="mb-3">
             <label for="name" class="form-label">Nom de la quête</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ quest.name }}" required>
+            <input type="text" id="name" name="name" class="form-control" required value="{{ quest.name }}">
         </div>
 
         <div class="mb-3">
             <label for="objectif" class="form-label">Objectif</label>
-            <textarea name="objectif" id="objectif" class="form-control" required>{{ quest.objectif }}</textarea>
+            <textarea id="objectif" name="objectif" class="form-control" rows="3" required>{{ quest.objectif }}</textarea>
         </div>
 
         <div class="mb-3">
             <label for="information" class="form-label">Informations supplémentaires</label>
-            <textarea name="information" id="information" class="form-control">{{ quest.information }}</textarea>
+            <textarea id="information" name="information" class="form-control" rows="2">{{ quest.information }}</textarea>
         </div>
 
         <div class="mb-3">
             <label for="origine" class="form-label">Origine</label>
-            <input type="text" name="origine" id="origine" class="form-control" value="{{ quest.origine }}">
+            <input type="text" id="origine" name="origine" class="form-control" value="{{ quest.origine }}">
         </div>
 
-        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-        <a href="{{ path('quest_index') }}" class="btn btn-secondary ms-2">← Retour à la liste</a>
+        <button type="submit" class="btn btn-success">💾 Enregistrer les modifications</button>
+        <a href="{{ path('quest_index', { heroId: hero.id }) }}" class="btn btn-secondary">Annuler</a>
     </form>
+
 </div>
 {% endblock %}

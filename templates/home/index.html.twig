@@ -1,21 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Bienvenue, Aventurier{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-<!-- Police médiévale Google Fonts -->
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Bienvenue, {{ app.user.username }} !</h1>
 
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} text-center">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
 
+    {% if heroes|length > 0 %}
+        <h2 class="mb-3">Vos héros :</h2>
+        <div class="row g-3">
+            {% for hero in heroes %}
+                <div class="col-md-4">
+                    <div class="card h-100 {% if selectedHero and hero.id == selectedHero.id %}border-warning{% endif %}">
+                        {% if hero.photo %}
+                            <img src="{{ asset('uploads/heroes/' ~ hero.photo) }}" class="card-img-top" alt="{{ hero.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ hero.name }}</h5>
+                            {% if hero.universe %}
+                                <p class="card-text"><strong>Univers :</strong> {{ hero.universe }}</p>
+                            {% endif %}
+                            {% if hero.additionalInfo %}
+                                <p class="card-text">{{ hero.additionalInfo|length > 100 ? hero.additionalInfo|slice(0,100) ~ '...' : hero.additionalInfo }}</p>
+                            {% endif %}
 
-<div class="jdr-wrapper">
-    <img src="https://cdn-icons-png.flaticon.com/512/7734/7734539.png" alt="Icône d'épée" class="icon" />
-    <h1>Bienvenue, {{ app.user ? app.user.username : 'aventurier' }}</h1>
-    <p>
-        Tu pénètres dans un royaume oublié, où les anciens secrets dorment encore sous la brume...
-        <br>
-        Prépare ton équipement, forge ton destin, et choisis ta voie : mage, rôdeur, guerrier ou voleur.
-    </p>
+                            <a href="{{ path('app_home', {'hero_id': hero.id}) }}" class="btn btn-sm btn-outline-primary">Sélectionner</a>
 
-    
+                            {# Formulaire de suppression #}
+                            <form action="{{ path('hero_delete', {'id': hero.id}) }}" method="post" style="display:inline-block;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce héros ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hero.id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Vous n'avez pas encore de héros.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('hero_new') }}" class="btn btn-primary btn-lg">Créer un nouveau héros</a>
+    </div>
+
+    {% if selectedHero %}
+        <div class="mt-5 text-center">
+            <h2>Héros sélectionné : {{ selectedHero.name }}</h2>
+            {% if selectedHero.photo %}
+                <img src="{{ asset('uploads/heroes/' ~ selectedHero.photo) }}" alt="{{ selectedHero.name }}" class="img-fluid rounded mt-3" style="max-width: 300px;">
+            {% endif %}
+            {% if selectedHero.universe %}
+                <p class="mt-2"><strong>Univers :</strong> {{ selectedHero.universe }}</p>
+            {% endif %}
+            {% if selectedHero.additionalInfo %}
+                <p>{{ selectedHero.additionalInfo }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -3,31 +3,34 @@
 {% block title %}Nouvelle Quête{% endblock %}
 
 {% block body %}
-<div class="inventory-wrapper">
-    <h1>Ajouter une nouvelle quête</h1>
+<div class="container mt-4" style="max-width:600px;">
 
-    <form method="post" action="{{ path('quest_new') }}">
-        <div class="form-group mb-2">
-            <label for="name">Nom de la quête</label>
-            <input type="text" name="name" id="name" class="form-control" required>
+    <h1 class="mb-4">Nouvelle Quête pour {{ hero.name }}</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom de la quête</label>
+            <input type="text" id="name" name="name" class="form-control" required>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="objectif">Objectif</label>
-            <textarea name="objectif" id="objectif" class="form-control" required></textarea>
+        <div class="mb-3">
+            <label for="objectif" class="form-label">Objectif</label>
+            <textarea id="objectif" name="objectif" class="form-control" rows="3" required></textarea>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="information">Informations supplémentaires</label>
-            <textarea name="information" id="information" class="form-control"></textarea>
+        <div class="mb-3">
+            <label for="information" class="form-label">Informations supplémentaires</label>
+            <textarea id="information" name="information" class="form-control" rows="2"></textarea>
         </div>
 
-        <div class="form-group mb-2">
-            <label for="origine">Origine</label>
-            <input type="text" name="origine" id="origine" class="form-control">
+        <div class="mb-3">
+            <label for="origine" class="form-label">Origine</label>
+            <input type="text" id="origine" name="origine" class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-primary mt-2">Ajouter la quête</button>
+        <button type="submit" class="btn btn-success">Créer la quête</button>
+        <a href="{{ path('quest_index', { heroId: hero.id }) }}" class="btn btn-secondary">Annuler</a>
     </form>
+
 </div>
 {% endblock %}

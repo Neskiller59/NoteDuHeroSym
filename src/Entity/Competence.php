@@ -1,9 +1,10 @@
 <?php
-// src/Entity/Competence.php
+
 namespace App\Entity;
 
 use App\Repository\CompetenceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Hero;
 
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
 class Competence
@@ -25,11 +26,11 @@ class Competence
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $origine = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "competences")]
+    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: "competences")]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Hero $hero = null;
 
-    // === Getters / Setters ===
+    // ===== Getters & Setters =====
 
     public function getId(): ?int
     {
@@ -80,15 +81,14 @@ class Competence
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getHero(): ?Hero
     {
-        return $this->user;
+        return $this->hero;
     }
 
-    public function setUser(?User $user): static
+    public function setHero(?Hero $hero): static
     {
-        $this->user = $user;
+        $this->hero = $hero;
         return $this;
     }
 }
-

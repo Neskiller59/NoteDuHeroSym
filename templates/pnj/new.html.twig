@@ -1,77 +1,54 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ pnj is defined ? 'Modifier PNJ' : 'Créer PNJ' }}
+    {{ pnj is defined ? 'Éditer PNJ' : 'Nouveau PNJ' }}
 {% endblock %}
 
 {% block body %}
-<div class="container mt-5" style="background: rgba(30,30,50,0.9); padding: 2rem; border-radius: 15px; box-shadow: 0 0 20px #ffd700;">
-    <h1 class="h3 mb-4 text-gold" style="text-shadow: 2px 2px 5px #000;">
-        {{ pnj is defined ? 'Modifier PNJ' : 'Créer un PNJ' }}
+<div class="container mt-4" style="max-width:600px;">
+
+    <h1 class="mb-4">
+        {{ pnj is defined ? 'Éditer PNJ pour ' ~ hero.name : 'Nouveau PNJ pour ' ~ hero.name }}
     </h1>
 
-    <form method="post" class="row g-3 text-gold">
-        <div class="col-md-6">
+    <form method="post">
+        <div class="mb-3">
             <label for="name" class="form-label">Nom</label>
-            <input type="text" id="name" name="name" class="form-control" required
-                   value="{{ pnj.name|default('') }}" 
-                   style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">
+            <input type="text" id="name" name="name" class="form-control"
+                   required value="{{ pnj.name ?? '' }}">
         </div>
 
-        <div class="col-md-6">
-            <label for="localisation" class="form-label">Localisation</label>
-            <input type="text" id="localisation" name="localisation" class="form-control"
-                   value="{{ pnj.localisation|default('') }}" 
-                   style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">
-        </div>
-
-        <div class="col-12">
+        <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" class="form-control" rows="3" required
-                      style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">{{ pnj.description|default('') }}</textarea>
+            <textarea id="description" name="description" class="form-control" rows="3" required>{{ pnj.description ?? '' }}</textarea>
         </div>
 
-        <div class="col-12">
-            <label for="personaliter" class="form-label">Personnalité</label>
-            <textarea id="personaliter" name="personaliter" class="form-control" rows="2"
-                      style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">{{ pnj.personaliter|default('') }}</textarea>
-        </div>
-
-        <div class="col-12">
-            <label for="competence" class="form-label">Compétences</label>
-            <textarea id="competence" name="competence" class="form-control" rows="2"
-                      style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">{{ pnj.competence|default('') }}</textarea>
-        </div>
-
-        <div class="col-12">
+        <div class="mb-3">
             <label for="information" class="form-label">Informations supplémentaires</label>
-            <textarea id="information" name="information" class="form-control" rows="2"
-                      style="background: rgba(0,0,0,0.6); color: #f5e1a4; border: 1px solid #ffd700;">{{ pnj.information|default('') }}</textarea>
+            <textarea id="information" name="information" class="form-control" rows="2">{{ pnj.information ?? '' }}</textarea>
         </div>
 
-        <div class="col-12 d-flex gap-2 mt-3">
-            <button type="submit" class="btn btn-gold">
-                {{ pnj is defined ? 'Modifier' : 'Créer' }}
-            </button>
-            <a href="{{ path('pnj_list') }}" class="btn btn-outline-warning">Annuler</a>
+        <div class="mb-3">
+            <label for="localisation" class="form-label">Localisation</label>
+            <input type="text" id="localisation" name="localisation" class="form-control" value="{{ pnj.localisation ?? '' }}">
         </div>
+
+        <div class="mb-3">
+            <label for="personnalite" class="form-label">Personnalité</label>
+            <textarea id="personnalite" name="personnalite" class="form-control" rows="2">{{ pnj.personnalite ?? '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="competence" class="form-label">Compétence</label>
+            <input type="text" id="competence" name="competence" class="form-control" value="{{ pnj.competence ?? '' }}">
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            {{ pnj is defined ? 'Mettre à jour' : 'Créer' }}
+        </button>
+
+        <a href="{{ path('pnj_list') }}" class="btn btn-secondary ms-2">Annuler</a>
     </form>
-</div>
 
-<style>
-    .text-gold { color: #f5e1a4 !important; }
-    .btn-gold {
-        background: linear-gradient(to right, #ffd700, #f5e1a4);
-        color: #000;
-        font-weight: bold;
-        border: 2px solid #f5e1a4;
-        text-shadow: 1px 1px 2px #000;
-    }
-    .btn-gold:hover {
-        background: linear-gradient(to right, #f5e1a4, #ffd700);
-        color: #000;
-        transform: scale(1.05);
-        transition: 0.2s;
-    }
-</style>
+</div>
 {% endblock %}

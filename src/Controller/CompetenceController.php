@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Competence;
+use App\Entity\Hero;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,77 +14,100 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class CompetenceController extends AbstractController
 {
-    #[Route('/competence', name: 'competence_list')]
-    public function list(EntityManagerInterface $em): Response
+    // Liste des compétences pour un héros
+    #[Route('/hero/{heroId}/competences', name: 'competence_list')]
+    public function list(int $heroId, EntityManagerInterface $em): Response
     {
-        $user = $this->getUser();
-        $competences = $em->getRepository(Competence::class)->findBy(['user' => $user]);
+        $hero = $em->getRepository(Hero::class)->find($heroId);
+
+        if (!$hero || $hero->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Héros introuvable ou non autorisé.');
+        }
+
+        $competences = $em->getRepository(Competence::class)->findBy(['hero' => $hero]);
 
         return $this->render('competence/list.html.twig', [
             'competences' => $competences,
+            'hero' => $hero,
         ]);
     }
 
-    #[Route('/competence/new', name: 'competence_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    // Créer une nouvelle compétence pour un héros
+    #[Route('/hero/{heroId}/competence/new', name: 'competence_new')]
+    public function new(int $heroId, Request $request, EntityManagerInterface $em): Response
     {
+        $hero = $em->getRepository(Hero::class)->find($heroId);
+
+        if (!$hero || $hero->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Héros introuvable ou non autorisé.');
+        }
+
         if ($request->isMethod('POST')) {
             $competence = new Competence();
             $competence->setName($request->request->get('name'))
-                ->setDescription($request->request->get('description'))
-                ->setEffet($request->request->get('effet'))
-                ->setOrigine($request->request->get('origine'))
-                ->setUser($this->getUser()); // 🔒 On associe l'utilisateur connecté
+                       ->setDescription($request->request->get('description'))
+                       ->setEffet($request->request->get('effet'))
+                       ->setOrigine($request->request->get('origine'))
+                       ->setHero($hero);
 
             $em->persist($competence);
             $em->flush();
 
-            return $this->redirectToRoute('competence_list');
+            return $this->redirectToRoute('competence_list', ['heroId' => $heroId]);
         }
 
-        return $this->render('competence/new.html.twig');
+        return $this->render('competence/new.html.twig', [
+            'hero' => $hero,
+        ]);
     }
 
-    #[Route('/competence/edit/{id}', name: 'competence_edit')]
-    public function edit(int $id, Request $request, EntityManagerInterface $em): Response
+    // Éditer une compétence existante
+    #[Route('/hero/{heroId}/competence/edit/{id}', name: 'competence_edit')]
+    public function edit(int $heroId, int $id, Request $request, EntityManagerInterface $em): Response
     {
+        $hero = $em->getRepository(Hero::class)->find($heroId);
         $competence = $em->getRepository(Competence::class)->find($id);
 
-        if (!$competence) {
-            throw $this->createNotFoundException('Compétence introuvable.');
-        }
-
-        // 🔒 Sécurité : un utilisateur ne peut éditer que ses propres compétences
-        if ($competence->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette compétence.');
+        if (!$hero || $hero->getUser() !== $this->getUser() || !$competence || $competence->getHero()->getId() !== $heroId) {
+            throw $this->createAccessDeniedException('Accès refusé.');
         }
 
         if ($request->isMethod('POST')) {
             $competence->setName($request->request->get('name'))
-                ->setDescription($request->request->get('description'))
-                ->setEffet($request->request->get('effet'))
-                ->setOrigine($request->request->get('origine'));
+                       ->setDescription($request->request->get('description'))
+                       ->setEffet($request->request->get('effet'))
+                       ->setOrigine($request->request->get('origine'));
 
             $em->flush();
 
-            return $this->redirectToRoute('competence_list');
+            return $this->redirectToRoute('competence_list', ['heroId' => $heroId]);
         }
 
         return $this->render('competence/new.html.twig', [
+            'hero' => $hero,
             'competence' => $competence,
         ]);
     }
 
-    #[Route('/competence/delete/{id}', name: 'competence_delete', methods: ['POST'])]
-    public function delete(int $id, EntityManagerInterface $em): Response
+    // Supprimer une compétence
+    #[Route('/hero/{heroId}/competence/delete/{id}', name: 'competence_delete', methods: ['POST'])]
+    public function delete(int $heroId, int $id, Request $request, EntityManagerInterface $em): Response
     {
+        $hero = $em->getRepository(Hero::class)->find($heroId);
         $competence = $em->getRepository(Competence::class)->find($id);
 
-        if ($competence && $competence->getUser() === $this->getUser()) {
-            $em->remove($competence);
-            $em->flush();
+        if (!$hero || $hero->getUser() !== $this->getUser() || !$competence || $competence->getHero()->getId() !== $heroId) {
+            throw $this->createAccessDeniedException('Accès refusé.');
         }
 
-        return $this->redirectToRoute('competence_list');
+        if (!$this->isCsrfTokenValid('delete'.$competence->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('competence_list', ['heroId' => $heroId]);
+        }
+
+        $em->remove($competence);
+        $em->flush();
+
+        return $this->redirectToRoute('competence_list', ['heroId' => $heroId]);
     }
 }

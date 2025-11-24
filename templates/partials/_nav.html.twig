@@ -1,70 +1,73 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow" style="font-family: 'Uncial Antiqua', serif;">
     <div class="container-fluid">
+
         <a class="navbar-brand text-warning" href="{{ path('app_home') }}">🛡️ Notes du héros</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navMain">
+
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}" 
+                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}"
                        href="{{ path('app_home') }}">
                         Accueil
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'inventory_' %}active{% endif %}" 
-                       href="{{ path('inventory_list') }}">
-                        Inventaire
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'quest_' %}active{% endif %}" 
-                       href="{{ path('quest_index') }}">
-                        Quêtes
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'pnj_' %}active{% endif %}" 
-                       href="{{ path('pnj_list') }}">
-                        PNJ
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'competence_' %}active{% endif %}" 
-                       href="{{ path('competence_list') }}">
-                        Compétences
-                    </a>
-                </li>
+
+                {# Vérifie que selectedHero est défini et non null #}
+                {% if selectedHero is defined and selectedHero %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'inventory_' %}active{% endif %}"
+                           href="{{ path('inventory_list', { heroId: selectedHero.id }) }}">
+                            Inventaire
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'quest_' %}active{% endif %}"
+                           href="{{ path('quest_index', { heroId: selectedHero.id }) }}">
+                            Quêtes
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'pnj_' %}active{% endif %}"
+                           href="{{ path('pnj_list', { heroId: selectedHero.id }) }}">
+                            PNJ
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'competence_' %}active{% endif %}"
+                           href="{{ path('competence_list', { heroId: selectedHero.id }) }}">
+                            Compétences
+                        </a>
+                    </li>
+                {% endif %}
+
             </ul>
 
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {% if app.user %}
-                            {{ app.user.username }}
-                        {% else %}
-                            Compte
-                        {% endif %}
+                    <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        {% if app.user %}{{ app.user.username }}{% else %}Compte{% endif %}
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-end bg-dark border border-warning">
                         {% if app.user %}
-                            <li>
-                                <a class="dropdown-item text-warning" href="{{ path('app_logout') }}">Déconnexion</a>
-                            </li>
+                            <li><a class="dropdown-item text-warning" href="{{ path('app_logout') }}">Déconnexion</a></li>
                         {% else %}
-                            <li>
-                                <a class="dropdown-item text-warning" href="{{ path('app_login') }}">Connexion</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-warning" href="{{ path('app_register') }}">Inscription</a>
-                            </li>
+                            <li><a class="dropdown-item text-warning" href="{{ path('app_login') }}">Connexion</a></li>
+                            <li><a class="dropdown-item text-warning" href="{{ path('app_register') }}">Inscription</a></li>
                         {% endif %}
                     </ul>
                 </li>
             </ul>
+
         </div>
     </div>
 </nav>

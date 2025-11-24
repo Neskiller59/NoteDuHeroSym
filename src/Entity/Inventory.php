@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\InventoryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\User; // ✅ Import de la classe User
+use App\Entity\Hero;
 
 #[ORM\Entity(repositoryClass: InventoryRepository::class)]
 class Inventory
@@ -24,9 +24,11 @@ class Inventory
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $additionalInfo = null;
 
-    #[ORM\ManyToOne(inversedBy: 'inventories')]
-    #[ORM\JoinColumn(nullable: false)] // ✅ recommandé pour éviter les erreurs si la relation est obligatoire
-    private ?User $user = null;
+    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: 'inventories')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Hero $hero = null;
+
+    // ===== Getters & Setters =====
 
     public function getId(): ?int
     {
@@ -66,14 +68,14 @@ class Inventory
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getHero(): ?Hero
     {
-        return $this->user;
+        return $this->hero;
     }
 
-    public function setUser(?User $user): static
+    public function setHero(?Hero $hero): static
     {
-        $this->user = $user;
+        $this->hero = $hero;
         return $this;
     }
 }

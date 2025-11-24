@@ -1,16 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Les PNJ{% endblock %}
+{% block title %}PNJ de {{ hero.name }}{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 text-gold" style="text-shadow: 2px 2px 4px #000;">Les PNJ</h1>
-        <a href="{{ path('pnj_new') }}" class="btn btn-gold shadow-sm">Créer un PNJ</a>
+        <h1 class="h2 text-gold" style="text-shadow: 2px 2px 4px #000;">PNJ de {{ hero.name }}</h1>
+        <a href="{{ path('pnj_new') }}" class="btn btn-gold shadow-sm">➕ Créer un PNJ</a>
     </div>
 
     {% if pnjs is empty %}
-        <div class="alert alert-dark text-gold border-gold">Aucun PNJ trouvé dans ce royaume.</div>
+        <div class="alert alert-dark text-gold border-gold">Aucun PNJ trouvé pour ce héros.</div>
     {% else %}
         <div class="table-responsive">
             <table class="table table-hover align-middle" style="background: rgba(20,20,40,0.8); color: #f5e1a4; border: 2px solid #f5e1a4;">
@@ -35,10 +36,20 @@
                             <td>{{ pnj.competence|length > 50 ? pnj.competence|slice(0, 50) ~ '...' : pnj.competence }}</td>
                             <td>{{ pnj.information|length > 50 ? pnj.information|slice(0, 50) ~ '...' : pnj.information }}</td>
                             <td class="text-end">
-                                <a href="{{ path('pnj_edit', {id: pnj.id}) }}" class="btn btn-primary btn-sm shadow-sm me-1" style="background: linear-gradient(to right, #8b4513, #d2b48c); border: none;">Éditer</a>
-                                <form method="post" action="{{ path('pnj_delete', {id: pnj.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment bannir ce PNJ ?');">
+                                <a href="{{ path('pnj_edit', {id: pnj.id}) }}" 
+                                   class="btn btn-primary btn-sm shadow-sm me-1" 
+                                   style="background: linear-gradient(to right, #8b4513, #d2b48c); border: none;" 
+                                   title="Éditer {{ pnj.name }}">
+                                   ✏️ Éditer
+                                </a>
+                                <form method="post" action="{{ path('pnj_delete', {id: pnj.id}) }}" style="display:inline;" 
+                                      onsubmit="return confirm('Voulez-vous vraiment supprimer ce PNJ ?');">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
-                                    <button class="btn btn-danger btn-sm shadow-sm" style="background: linear-gradient(to right, #800000, #ff4d4d); border: none;" type="submit">Supprimer</button>
+                                    <button class="btn btn-danger btn-sm shadow-sm" 
+                                            style="background: linear-gradient(to right, #800000, #ff4d4d); border: none;" 
+                                            type="submit" title="Supprimer {{ pnj.name }}">
+                                        🗑 Supprimer
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -47,6 +58,16 @@
             </table>
         </div>
     {% endif %}
+
+    {# --- Messages flash --- #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 </div>
 
 <style>

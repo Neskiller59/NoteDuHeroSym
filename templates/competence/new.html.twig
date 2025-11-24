@@ -1,31 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouvelle compétence{% endblock %}
+{% block title %}{{ competence is defined ? 'Modifier compétence' : 'Nouvelle compétence' }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="h2 text-gold mb-4">Créer une nouvelle compétence</h1>
+<div class="container mt-5" style="max-width:700px;">
+    <h1 class="h2 mb-4">
+        {{ competence is defined ? 'Modifier compétence pour ' ~ hero.name : 'Créer une nouvelle compétence pour ' ~ hero.name }}
+    </h1>
 
     <form method="post">
         <div class="mb-3">
-            <label class="form-label text-gold">Nom</label>
+            <label class="form-label">Nom</label>
             <input type="text" name="name" class="form-control" value="{{ competence.name ?? '' }}" required>
         </div>
+
         <div class="mb-3">
-            <label class="form-label text-gold">Description</label>
+            <label class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="4">{{ competence.description ?? '' }}</textarea>
         </div>
+
         <div class="mb-3">
-            <label class="form-label text-gold">Effet</label>
+            <label class="form-label">Effet</label>
             <input type="text" name="effet" class="form-control" value="{{ competence.effet ?? '' }}">
         </div>
+
         <div class="mb-3">
-            <label class="form-label text-gold">Origine</label>
+            <label class="form-label">Origine</label>
             <input type="text" name="origine" class="form-control" value="{{ competence.origine ?? '' }}">
         </div>
 
-        <button type="submit" class="btn btn-gold shadow-sm">Enregistrer</button>
-        <a href="{{ path('competence_list') }}" class="btn btn-secondary">Annuler</a>
+        <button type="submit" class="btn btn-success">
+            {{ competence is defined ? '💾 Enregistrer les modifications' : '💾 Créer la compétence' }}
+        </button>
+
+        {# ✅ Bouton Annuler avec heroId #}
+        <a href="{{ path('competence_list', {'heroId': hero.id}) }}" class="btn btn-secondary ms-2">← Annuler</a>
     </form>
+
+    {# --- Messages flash --- #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 </div>
 {% endblock %}

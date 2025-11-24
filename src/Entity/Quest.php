@@ -6,6 +6,8 @@ use App\Repository\QuestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\User;
+use App\Entity\Hero;
 
 #[ORM\Entity(repositoryClass: QuestRepository::class)]
 class Quest
@@ -33,65 +35,22 @@ class Quest
     #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
-    // ===== Getters et Setters =====
+    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: "quests")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Hero $hero = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function getObjectif(): ?string
-    {
-        return $this->objectif;
-    }
-
-    public function setObjectif(string $objectif): static
-    {
-        $this->objectif = $objectif;
-        return $this;
-    }
-
-    public function getInformation(): ?string
-    {
-        return $this->information;
-    }
-
-    public function setInformation(?string $information): static
-    {
-        $this->information = $information;
-        return $this;
-    }
-
-    public function getOrigine(): ?string
-    {
-        return $this->origine;
-    }
-
-    public function setOrigine(?string $origine): static
-    {
-        $this->origine = $origine;
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-        return $this;
-    }
+    // ===== GETTERS / SETTERS =====
+    public function getId(): ?int { return $this->id; }
+    public function getName(): ?string { return $this->name; }
+    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function getObjectif(): ?string { return $this->objectif; }
+    public function setObjectif(string $objectif): static { $this->objectif = $objectif; return $this; }
+    public function getInformation(): ?string { return $this->information; }
+    public function setInformation(?string $information): static { $this->information = $information; return $this; }
+    public function getOrigine(): ?string { return $this->origine; }
+    public function setOrigine(?string $origine): static { $this->origine = $origine; return $this; }
+    public function getUser(): ?User { return $this->user; }
+    public function setUser(?User $user): static { $this->user = $user; return $this; }
+    public function getHero(): ?Hero { return $this->hero; }
+    public function setHero(Hero $hero): static { $this->hero = $hero; return $this; }
 }

@@ -1,117 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Les PNJ{% endblock %}
+{% block title %}PNJ de {{ hero.name }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5" style="font-family: 'Arial', sans-serif;">
+<div class="container mt-4" style="max-width:900px;">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ path('pnj_new') }}" class="btn btn-add">➕ Ajouter un PNJ</a>
+        <h1 class="h2">PNJ de {{ hero.name }}</h1>
+        <a href="{{ path('pnj_new') }}" class="btn btn-success">➕ Nouveau PNJ</a>
     </div>
 
     {% if pnjs is empty %}
-        <div class="alert text-center">
-            Aucun PNJ trouvé.
-        </div>
+        <div class="alert text-center">Aucun PNJ trouvé pour ce héros.</div>
     {% else %}
-        <div class="row g-4">
-            {% for pnj in pnjs %}
-                {% set desc = pnj.description %}
-                {% set perso = pnj.personaliter %}
-                {% set comp = pnj.competence %}
-                {% set info = pnj.information %}
-                <div class="col-md-4">
-                    <div class="card card-pnj shadow-sm">
-                        <div class="card-header text-center card-header-pnj">
-                            <h3 class="card-title">{{ pnj.name }}</h3>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Description:</strong> {{ desc|default('Aucune') }}</p>
-                            <p><strong>Localisation:</strong> {{ pnj.localisation|default('Inconnue') }}</p>
-                            <p><strong>Personnalité:</strong> {{ perso|default('Aucune') }}</p>
-                            <p><strong>Compétences:</strong> {{ comp|default('Aucune') }}</p>
-                            <p><strong>Informations supplémentaires:</strong> {{ info|default('Aucune') }}</p>
-                        </div>
-                        <div class="card-footer d-flex justify-content-center gap-2">
-                            <a href="{{ path('pnj_edit', {'id': pnj.id}) }}" class="btn btn-edit">Éditer</a>
-                            <form method="post" action="{{ path('pnj_delete', {'id': pnj.id}) }}" onsubmit="return confirm('Voulez-vous supprimer ce PNJ ?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
-                                <button type="submit" class="btn btn-delete">Supprimer</button>
-                            </form>
-                        </div>
+        {% for pnj in pnjs %}
+            <div class="card mb-3 shadow-sm" style="background-color:#2a2a3f; color:#fff;">
+                <div class="card-body d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3 class="card-title">{{ pnj.name }}</h3>
+                        <p class="mb-1"><strong>Description :</strong> {{ pnj.description }}</p>
+                        {% if pnj.information %}
+                            <p class="mb-1"><strong>Informations :</strong> {{ pnj.information }}</p>
+                        {% endif %}
+                        {% if pnj.localisation %}
+                            <p class="mb-1"><strong>Localisation :</strong> {{ pnj.localisation }}</p>
+                        {% endif %}
+                        {% if pnj.personnalite %}
+                            <p class="mb-1"><strong>Personnalité :</strong> {{ pnj.personnalite }}</p>
+                        {% endif %}
+                        {% if pnj.competence %}
+                            <p class="mb-1"><strong>Compétence :</strong> {{ pnj.competence }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-start" style="white-space: nowrap;">
+                        <a href="{{ path('pnj_edit', {'id': pnj.id}) }}" 
+                           class="btn btn-warning btn-sm me-2" title="Modifier">✏️</a>
+
+                        <form method="post" action="{{ path('pnj_delete', {'id': pnj.id}) }}" 
+                              style="display:inline;" 
+                              onsubmit="return confirm('Supprimer ce PNJ ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">🗑️</button>
+                        </form>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     {% endif %}
+
+    {# Messages flash #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 </div>
-
-<style>
-/* Carte PNJ attractive */
-.card-pnj {
-    border: 2px solid #180202ff;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.3s;
-    word-wrap: break-word; /* Texte passe à la ligne automatiquement */
-}
-
-.card-pnj:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(108,99,255,0.4);
-}
-
-.card-header-pnj {
-    background: #0a0a0cff;
-    color: #fff;
-    padding: 0.8rem;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-.card-title {
-    margin: 0;
-}
-
-.card-body p {
-    margin-bottom: 0.5rem;
-    white-space: pre-wrap; /* Permet les retours à la ligne automatiques */
-}
-
-.btn-edit, .btn-delete, .btn-add {
-    border-radius: 6px;
-    font-weight: bold;
-    padding: 0.3rem 0.8rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-edit {
-    background-color: #4d3636ff;
-    color: #fff;
-    border: none;
-}
-.btn-edit:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(75,73,209,0.5);
-}
-
-.btn-delete {
-    background-color: #d14b4b;
-    color: #fff;
-    border: none;
-}
-.btn-delete:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(209,75,75,0.5);
-}
-
-.btn-add {
-    background-color: #156909ff;
-    color: #fff;
-    border: none;
-}
-.btn-add:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(75,73,209,0.5);
-}
-</style>
 {% endblock %}

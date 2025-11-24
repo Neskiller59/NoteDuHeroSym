@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PnjRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Hero;
 
 #[ORM\Entity(repositoryClass: PnjRepository::class)]
 class Pnj
@@ -27,10 +28,17 @@ class Pnj
     private ?string $localisation = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
-    private ?string $Personaliter = null;
+    private ?string $personnalite = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $competence = null;
+
+    // Relation obligatoire avec le héros
+    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: "pnjs")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Hero $hero = null;
+
+    // ===== Getters & Setters =====
 
     public function getId(): ?int
     {
@@ -45,7 +53,6 @@ class Pnj
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -57,7 +64,6 @@ class Pnj
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -69,7 +75,6 @@ class Pnj
     public function setInformation(?string $information): static
     {
         $this->information = $information;
-
         return $this;
     }
 
@@ -81,19 +86,17 @@ class Pnj
     public function setLocalisation(?string $localisation): static
     {
         $this->localisation = $localisation;
-
         return $this;
     }
 
-    public function getPersonaliter(): ?string
+    public function getPersonnalite(): ?string
     {
-        return $this->Personaliter;
+        return $this->personnalite;
     }
 
-    public function setPersonaliter(?string $Personaliter): static
+    public function setPersonnalite(?string $personnalite): static
     {
-        $this->Personaliter = $Personaliter;
-
+        $this->personnalite = $personnalite;
         return $this;
     }
 
@@ -105,7 +108,17 @@ class Pnj
     public function setCompetence(?string $competence): static
     {
         $this->competence = $competence;
+        return $this;
+    }
 
+    public function getHero(): ?Hero
+    {
+        return $this->hero;
+    }
+
+    public function setHero(Hero $hero): static
+    {
+        $this->hero = $hero;
         return $this;
     }
 }
