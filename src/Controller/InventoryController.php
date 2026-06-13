@@ -2,55 +2,147 @@
 
 namespace App\Controller;
 
-use App\Entity\Inventory;
 use App\Entity\Hero;
+use App\Entity\Inventory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 class InventoryController extends AbstractController
 {
-    #[Route('/hero/{heroId}/inventory', name: 'inventory_list')]
-    public function list(int $heroId, EntityManagerInterface $em): Response
-    {
+    // =========================
+    // INVENTORY LIST
+    // =========================
+
+    #[Route('/inventory', name: 'inventory_list')]
+    public function list(
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
-        $hero = $em->getRepository(Hero::class)->find($heroId);
-        if (!$hero || $hero->getUser() !== $user) {
-            throw $this->createAccessDeniedException('Héros introuvable ou non autorisé.');
+        // =========================
+        // HERO ACTIF
+        // =========================
+        $activeHeroId = $session->get('active_hero_id');
+
+        if (!$activeHeroId) {
+
+            $this->addFlash(
+                'warning',
+                'Veuillez sélectionner un héros.'
+            );
+
+            return $this->redirectToRoute('hero_index');
         }
 
-        $items = $em->getRepository(Inventory::class)->findBy(['hero' => $hero]);
+        $hero = $em->getRepository(Hero::class)->find($activeHeroId);
+
+        // =========================
+        // SECURITY HERO OWNER
+        // =========================
+        if (
+            !$hero ||
+            $hero->getUser() !== $user
+        ) {
+
+            $session->remove('active_hero_id');
+
+            $this->addFlash(
+                'error',
+                'Héros introuvable.'
+            );
+
+            return $this->redirectToRoute('hero_index');
+        }
+
+        // =========================
+        // INVENTORY
+        // =========================
+        $items = $em->getRepository(Inventory::class)->findBy([
+            'hero' => $hero
+        ]);
 
         return $this->render('game/inventory.html.twig', [
-            'items' => $items,
-            'hero' => $hero
+            'hero' => $hero,
+            'items' => $items
         ]);
     }
 
-    #[Route('/hero/{heroId}/inventory/new', name: 'inventory_new')]
-    public function new(int $heroId, Request $request, EntityManagerInterface $em): Response
-    {
+    // =========================
+    // NEW ITEM
+    // =========================
+
+    #[Route('/inventory/new', name: 'inventory_new')]
+    public function new(
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
-        $hero = $em->getRepository(Hero::class)->find($heroId);
-        if (!$hero || $hero->getUser() !== $user) {
-            throw $this->createAccessDeniedException('Héros introuvable ou non autorisé.');
+        $activeHeroId = $session->get('active_hero_id');
+
+        if (!$activeHeroId) {
+
+            $this->addFlash(
+                'warning',
+                'Veuillez sélectionner un héros.'
+            );
+
+            return $this->redirectToRoute('hero_index');
         }
 
+        $hero = $em->getRepository(Hero::class)->find($activeHeroId);
+
+        if (
+            !$hero ||
+            $hero->getUser() !== $user
+        ) {
+
+            $session->remove('active_hero_id');
+
+            return $this->redirectToRoute('hero_index');
+        }
+
+        // =========================
+        // CREATE ITEM
+        // =========================
         if ($request->isMethod('POST')) {
+
             $item = new Inventory();
-            $item->setName($request->request->get('name'))
-                 ->setDescription($request->request->get('description'))
-                 ->setAdditionalInfo($request->request->get('additionalInfo'))
-                 ->setHero($hero);
+
+            $item->setName(
+                $request->request->get('name')
+            );
+
+            $item->setDescription(
+                $request->request->get('description')
+            );
+
+            $item->setAdditionalInfo(
+                $request->request->get('additionalInfo')
+            );
+
+            $item->setHero($hero);
 
             $em->persist($item);
             $em->flush();
 
-            return $this->redirectToRoute('inventory_list', ['heroId' => $heroId]);
+            $this->addFlash(
+                'success',
+                'Objet ajouté à l\'inventaire.'
+            );
+
+            return $this->redirectToRoute('inventory_list');
         }
 
         return $this->render('game/newInventory.html.twig', [
@@ -58,26 +150,72 @@ class InventoryController extends AbstractController
         ]);
     }
 
+    // =========================
+    // EDIT ITEM
+    // =========================
+
     #[Route('/inventory/{id}/edit', name: 'inventory_edit')]
-    public function edit(int $id, Request $request, EntityManagerInterface $em): Response
-    {
-        $item = $em->getRepository(Inventory::class)->find($id);
+    public function edit(
+        int $id,
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
-        if (!$item || $item->getHero()->getUser() !== $user) {
-            throw $this->createNotFoundException('Objet introuvable ou accès refusé.');
+        $activeHeroId = $session->get('active_hero_id');
+
+        if (!$activeHeroId) {
+
+            return $this->redirectToRoute('hero_index');
         }
 
+        $item = $em->getRepository(Inventory::class)->find($id);
+
+        // =========================
+        // SECURITY
+        // =========================
+        if (
+            !$item ||
+            !$item->getHero() ||
+            $item->getHero()->getUser() !== $user ||
+            $item->getHero()->getId() !== $activeHeroId
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Accès refusé.'
+            );
+
+            return $this->redirectToRoute('inventory_list');
+        }
+
+        // =========================
+        // UPDATE ITEM
+        // =========================
         if ($request->isMethod('POST')) {
-            $item->setName($request->request->get('name'))
-                 ->setDescription($request->request->get('description'))
-                 ->setAdditionalInfo($request->request->get('additionalInfo'));
+
+            $item->setName(
+                $request->request->get('name')
+            );
+
+            $item->setDescription(
+                $request->request->get('description')
+            );
+
+            $item->setAdditionalInfo(
+                $request->request->get('additionalInfo')
+            );
 
             $em->flush();
 
-            return $this->redirectToRoute('inventory_list', [
-                'heroId' => $item->getHero()->getId()
-            ]);
+            $this->addFlash(
+                'success',
+                'Objet modifié.'
+            );
+
+            return $this->redirectToRoute('inventory_list');
         }
 
         return $this->render('game/newInventory.html.twig', [
@@ -86,45 +224,123 @@ class InventoryController extends AbstractController
         ]);
     }
 
+    // =========================
+    // DELETE ITEM
+    // =========================
+
     #[Route('/inventory/{id}/delete', name: 'inventory_delete', methods: ['POST'])]
-    public function delete(int $id, Request $request, EntityManagerInterface $em): Response
-    {
-        $item = $em->getRepository(Inventory::class)->find($id);
+    public function delete(
+        int $id,
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
-        if (!$item || $item->getHero()->getUser() !== $user) {
-            throw $this->createAccessDeniedException('Accès refusé.');
+        $activeHeroId = $session->get('active_hero_id');
+
+        if (!$activeHeroId) {
+
+            return $this->redirectToRoute('hero_index');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$item->getId(), $request->request->get('_token'))) {
-            $heroId = $item->getHero()->getId();
-            $em->remove($item);
-            $em->flush();
+        $item = $em->getRepository(Inventory::class)->find($id);
 
-            return $this->redirectToRoute('inventory_list', ['heroId' => $heroId]);
+        // =========================
+        // SECURITY
+        // =========================
+        if (
+            !$item ||
+            !$item->getHero() ||
+            $item->getHero()->getUser() !== $user ||
+            $item->getHero()->getId() !== $activeHeroId
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Accès refusé.'
+            );
+
+            return $this->redirectToRoute('inventory_list');
         }
 
-        return $this->redirectToRoute('inventory_list', [
-            'heroId' => $item->getHero()->getId()
-        ]);
+        // =========================
+        // CSRF
+        // =========================
+        if (
+            !$this->isCsrfTokenValid(
+                'delete'.$item->getId(),
+                $request->request->get('_token')
+            )
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Token invalide.'
+            );
+
+            return $this->redirectToRoute('inventory_list');
+        }
+
+        $em->remove($item);
+        $em->flush();
+
+        $this->addFlash(
+            'success',
+            'Objet supprimé.'
+        );
+
+        return $this->redirectToRoute('inventory_list');
     }
 
     // =========================
-    // Nouvelle route : update gold
+    // UPDATE GOLD (AJAX)
+    // Corrections :
+    //   1. active_hero_id  (au lieu de hero_id)
+    //   2. lecture du champ 'gold' envoyé par le JS
+    //   3. retour JSON pour feedback AJAX
     // =========================
-    #[Route('/hero/{heroId}/inventory/update-gold', name: 'inventory_update_gold', methods: ['POST'])]
-    public function updateGold(int $heroId, Request $request, EntityManagerInterface $em): Response
-    {
-        $hero = $em->getRepository(Hero::class)->find($heroId);
-        if (!$hero || $hero->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Héros introuvable ou non autorisé.');
+
+    #[Route('/inventory/update-gold', name: 'inventory_update_gold', methods: ['POST'])]
+    public function updateGold(
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): JsonResponse {
+
+        $user = $this->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Non authentifié.'], 401);
         }
 
-        $amount = (int) $request->request->get('amount', 0);
-        $hero->setGold(max(0, $hero->getGold() + $amount)); // empêche l'or négatif
+        // ✅ FIX 1 — même clé de session que tout le reste du controller
+        $activeHeroId = $session->get('active_hero_id');
 
+        if (!$activeHeroId) {
+            return new JsonResponse(['error' => 'Aucun héros actif.'], 400);
+        }
+
+        $hero = $em->getRepository(Hero::class)->find($activeHeroId);
+
+        // ✅ FIX 2 — sécurité : le héros appartient bien à l'utilisateur connecté
+        if (!$hero || $hero->getUser() !== $user) {
+            $session->remove('active_hero_id');
+            return new JsonResponse(['error' => 'Héros introuvable.'], 403);
+        }
+
+        // ✅ FIX 3 — le champ envoyé par le JS s'appelle 'gold', pas 'amount'
+        $gold = (int) $request->request->get('gold', $hero->getGold());
+
+        if ($gold < 0) {
+            $gold = 0;
+        }
+
+        $hero->setGold($gold);
         $em->flush();
 
-        return $this->redirectToRoute('inventory_list', ['heroId' => $heroId]);
+        // ✅ Retour JSON avec la valeur sauvegardée pour confirmer à l'UI
+        return new JsonResponse(['gold' => $hero->getGold()]);
     }
 }

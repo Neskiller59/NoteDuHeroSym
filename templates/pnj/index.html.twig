@@ -1,93 +1,223 @@
+```twig
 {% extends 'base.html.twig' %}
 
-{% block title %}PNJ de {{ hero.name }}{% endblock %}
+{% block title %}
+    PNJ de {{ hero.name }}
+{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
+
+<div class="rpg-container container mt-5">
+
+    {# =========================
+       HEADER
+       ========================= #}
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 text-gold" style="text-shadow: 2px 2px 4px #000;">PNJ de {{ hero.name }}</h1>
-        <a href="{{ path('pnj_new') }}" class="btn btn-gold shadow-sm">➕ Créer un PNJ</a>
+
+        <h1 class="rpg-title">
+            🧙 PNJ de {{ hero.name }}
+        </h1>
+
+        <a href="{{ path('pnj_new') }}"
+           class="btn btn-warning">
+
+            ➕ Nouveau PNJ
+
+        </a>
+
     </div>
 
+    {# =========================
+       FLASH
+       ========================= #}
+
+    {% for label, messages in app.flashes %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }}
+                        alert-dismissible fade show"
+                 role="alert">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endfor %}
+
+    {# =========================
+       EMPTY
+       ========================= #}
+
     {% if pnjs is empty %}
-        <div class="alert alert-dark text-gold border-gold">Aucun PNJ trouvé pour ce héros.</div>
-    {% else %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle" style="background: rgba(20,20,40,0.8); color: #f5e1a4; border: 2px solid #f5e1a4;">
-                <thead style="background: rgba(50,30,0,0.9); color: #ffd700; font-weight: bold; text-shadow: 1px 1px 2px #000;">
-                    <tr>
-                        <th>Nom</th>
-                        <th>Description</th>
-                        <th>Localisation</th>
-                        <th>Personnalité</th>
-                        <th>Compétences</th>
-                        <th>Informations</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pnj in pnjs %}
-                        <tr style="border-bottom: 1px solid #f5e1a4;">
-                            <td>{{ pnj.name }}</td>
-                            <td>{{ pnj.description|length > 50 ? pnj.description|slice(0, 50) ~ '...' : pnj.description }}</td>
-                            <td>{{ pnj.localisation }}</td>
-                            <td>{{ pnj.personaliter|length > 50 ? pnj.personaliter|slice(0, 50) ~ '...' : pnj.personaliter }}</td>
-                            <td>{{ pnj.competence|length > 50 ? pnj.competence|slice(0, 50) ~ '...' : pnj.competence }}</td>
-                            <td>{{ pnj.information|length > 50 ? pnj.information|slice(0, 50) ~ '...' : pnj.information }}</td>
-                            <td class="text-end">
-                                <a href="{{ path('pnj_edit', {id: pnj.id}) }}" 
-                                   class="btn btn-primary btn-sm shadow-sm me-1" 
-                                   style="background: linear-gradient(to right, #8b4513, #d2b48c); border: none;" 
-                                   title="Éditer {{ pnj.name }}">
-                                   ✏️ Éditer
-                                </a>
-                                <form method="post" action="{{ path('pnj_delete', {id: pnj.id}) }}" style="display:inline;" 
-                                      onsubmit="return confirm('Voulez-vous vraiment supprimer ce PNJ ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
-                                    <button class="btn btn-danger btn-sm shadow-sm" 
-                                            style="background: linear-gradient(to right, #800000, #ff4d4d); border: none;" 
-                                            type="submit" title="Supprimer {{ pnj.name }}">
-                                        🗑 Supprimer
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+        <div class="rpg-empty text-center mt-5">
+
+            Aucun PNJ rencontré pour le moment.
+
         </div>
+
+    {% else %}
+
+        <div class="row g-4">
+
+            {% for pnj in pnjs %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card rpg-card h-100">
+
+                        <div class="card-body d-flex flex-column">
+
+                            {# =========================
+                               NAME
+                               ========================= #}
+
+                            <h5 class="text-warning mb-2">
+
+                                {{ pnj.name }}
+
+                            </h5>
+
+                            {# =========================
+                               LOCALISATION
+                               ========================= #}
+
+                            <p class="text-secondary small mb-3">
+
+                                📍 {{ pnj.localisation ?: 'Inconnue' }}
+
+                            </p>
+
+                            {# =========================
+                               DESCRIPTION
+                               ========================= #}
+
+                            {% if pnj.description %}
+
+                                <p class="mb-2">
+
+                                    <strong>Description :</strong><br>
+
+                                    {{ pnj.description|length > 120
+                                        ? pnj.description|slice(0,120) ~ '...'
+                                        : pnj.description }}
+
+                                </p>
+
+                            {% endif %}
+
+                            {# =========================
+                               PERSONNALITE
+                               ========================= #}
+
+                            {% if pnj.personnalite %}
+
+                                <p class="mb-2">
+
+                                    <strong>Personnalité :</strong><br>
+
+                                    {{ pnj.personnalite|length > 100
+                                        ? pnj.personnalite|slice(0,100) ~ '...'
+                                        : pnj.personnalite }}
+
+                                </p>
+
+                            {% endif %}
+
+                            {# =========================
+                               COMPETENCE
+                               ========================= #}
+
+                            {% if pnj.competence %}
+
+                                <p class="mb-2">
+
+                                    <strong>Compétence :</strong><br>
+
+                                    {{ pnj.competence|length > 100
+                                        ? pnj.competence|slice(0,100) ~ '...'
+                                        : pnj.competence }}
+
+                                </p>
+
+                            {% endif %}
+
+                            {# =========================
+                               NOTES
+                               ========================= #}
+
+                            {% if pnj.information %}
+
+                                <p class="mb-3">
+
+                                    <strong>Notes :</strong><br>
+
+                                    {{ pnj.information|length > 100
+                                        ? pnj.information|slice(0,100) ~ '...'
+                                        : pnj.information }}
+
+                                </p>
+
+                            {% endif %}
+
+                            {# =========================
+                               ACTIONS
+                               ========================= #}
+
+                            <div class="mt-auto d-flex gap-2">
+
+                                <a href="{{ path('pnj_edit', {
+                                    id: pnj.id
+                                }) }}"
+                                   class="btn btn-outline-warning btn-sm w-100">
+
+                                    ✏️ Modifier
+
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ path('pnj_delete', {
+                                          id: pnj.id
+                                      }) }}"
+                                      class="w-100"
+                                      onsubmit="return confirm('Supprimer ce PNJ ?')">
+
+                                    <input type="hidden"
+                                           name="_token"
+                                           value="{{ csrf_token('delete' ~ pnj.id) }}">
+
+                                    <button class="btn btn-outline-danger btn-sm w-100">
+
+                                        🗑 Supprimer
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
     {% endif %}
 
-    {# --- Messages flash --- #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endfor %}
 </div>
 
-<style>
-    .text-gold { color: #f5e1a4 !important; }
-    .btn-gold {
-        background: linear-gradient(to right, #ffd700, #f5e1a4);
-        color: #000;
-        font-weight: bold;
-        border: 2px solid #f5e1a4;
-        text-shadow: 1px 1px 2px #000;
-    }
-    .btn-gold:hover {
-        background: linear-gradient(to right, #f5e1a4, #ffd700);
-        color: #000;
-        transform: scale(1.05);
-        transition: 0.2s;
-    }
-    table tbody tr:hover {
-        background: rgba(255, 215, 0, 0.2);
-        cursor: pointer;
-    }
-</style>
 {% endblock %}
+```

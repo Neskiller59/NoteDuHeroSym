@@ -3,34 +3,132 @@
 {% block title %}Modifier Quête{% endblock %}
 
 {% block body %}
-<div class="container mt-4" style="max-width:600px;">
 
-    <h1 class="mb-4">Modifier la Quête pour {{ hero.name }}</h1>
+<div class="quest-edit-wrapper container mt-5" style="max-width:750px;">
 
-    <form method="post">
+    <div class="quest-edit-header shadow mb-4">
+
+        <div>
+            <h1 class="mb-1">✏️ Modifier la quête</h1>
+            <div class="text-muted">
+                Héros : <strong>{{ hero.name }}</strong>
+            </div>
+        </div>
+
+        <a href="{{ path('quest_index', { heroId: hero.id }) }}"
+           class="btn btn-secondary btn-sm">
+            ← Retour
+        </a>
+
+    </div>
+
+    <form method="post" class="quest-form shadow-lg">
+
         <div class="mb-3">
             <label for="name" class="form-label">Nom de la quête</label>
-            <input type="text" id="name" name="name" class="form-control" required value="{{ quest.name }}">
+            <input type="text"
+                   id="name"
+                   name="name"
+                   class="form-control"
+                   required
+                   value="{{ quest.name }}">
         </div>
 
         <div class="mb-3">
             <label for="objectif" class="form-label">Objectif</label>
-            <textarea id="objectif" name="objectif" class="form-control" rows="3" required>{{ quest.objectif }}</textarea>
+            <textarea id="objectif"
+                      name="objectif"
+                      class="form-control"
+                      rows="4"
+                      required>{{ quest.objectif }}</textarea>
         </div>
 
         <div class="mb-3">
-            <label for="information" class="form-label">Informations supplémentaires</label>
-            <textarea id="information" name="information" class="form-control" rows="2">{{ quest.information }}</textarea>
+            <label for="information" class="form-label">Informations</label>
+            <textarea id="information"
+                      name="information"
+                      class="form-control"
+                      rows="3">{{ quest.information }}</textarea>
         </div>
 
         <div class="mb-3">
             <label for="origine" class="form-label">Origine</label>
-            <input type="text" id="origine" name="origine" class="form-control" value="{{ quest.origine }}">
+            <input type="text"
+                   id="origine"
+                   name="origine"
+                   class="form-control"
+                   value="{{ quest.origine }}">
         </div>
 
-        <button type="submit" class="btn btn-success">💾 Enregistrer les modifications</button>
-        <a href="{{ path('quest_index', { heroId: hero.id }) }}" class="btn btn-secondary">Annuler</a>
+        <button type="submit"
+                class="btn btn-success w-100 btn-lg">
+            💾 Sauvegarder les modifications
+        </button>
+
     </form>
 
 </div>
+
+<style>
+
+body{
+    background:#141420;
+    color:white;
+}
+
+/* HEADER */
+.quest-edit-header{
+    background:linear-gradient(145deg,#23233a,#181826);
+    padding:20px;
+    border-radius:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* FORM */
+.quest-form{
+    background:linear-gradient(145deg,#23233a,#181826);
+    padding:25px;
+    border-radius:15px;
+}
+
+/* INPUT */
+.form-control{
+    background:#1a1a2a;
+    border:1px solid #333;
+    color:white;
+}
+
+.form-control:focus{
+    background:#1a1a2a;
+    color:white;
+    border-color:#ffd700;
+    box-shadow:0 0 0 0.2rem rgba(255,215,0,0.15);
+}
+
+/* BUTTON */
+.btn-success{
+    background:#ffd700;
+    border:none;
+    color:#000;
+    font-weight:bold;
+}
+
+.btn-success:hover{
+    background:#ffcc00;
+    color:#000;
+}
+
+.btn-secondary{
+    background:#2c2c3f;
+    border:none;
+}
+
+.btn-secondary:hover{
+    background:#3a3a55;
+}
+
+</style>
+
 {% endblock %}

@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Pnj;
 use App\Entity\Hero;
+use App\Entity\Pnj;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,140 +15,305 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class PnjController extends AbstractController
 {
-    // Liste des PNJs pour le héros actif
-    #[Route('/pnjs', name: 'pnj_list')]
-    public function list(EntityManagerInterface $em, SessionInterface $session): Response
-    {
+    // =========================
+    // LISTE DES PNJ
+    // =========================
+
+    #[Route('/pnj', name: 'pnj_list')]
+    public function list(
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
-        // Récupération du héros actif en session
+        // =========================
+        // HERO ACTIF
+        // =========================
         $activeHeroId = $session->get('active_hero_id');
+
         if (!$activeHeroId) {
-            $this->addFlash('warning', 'Veuillez sélectionner un héros pour voir ses PNJs.');
-            return $this->redirectToRoute('app_home');
+
+            $this->addFlash(
+                'warning',
+                'Veuillez sélectionner un héros.'
+            );
+
+            return $this->redirectToRoute('hero_index');
         }
 
         $hero = $em->getRepository(Hero::class)->find($activeHeroId);
-        if (!$hero || $hero->getUser() !== $user) {
-            $this->addFlash('error', 'Héros introuvable ou non autorisé.');
-            return $this->redirectToRoute('app_home');
+
+        // =========================
+        // SECURITY HERO OWNER
+        // =========================
+        if (
+            !$hero ||
+            $hero->getUser() !== $user
+        ) {
+
+            $session->remove('active_hero_id');
+
+            $this->addFlash(
+                'error',
+                'Héros introuvable.'
+            );
+
+            return $this->redirectToRoute('hero_index');
         }
 
-        $pnjs = $em->getRepository(Pnj::class)->findBy(['hero' => $hero]);
+        // =========================
+        // PNJ DU HERO
+        // =========================
+        $pnjs = $em->getRepository(Pnj::class)->findBy([
+            'hero' => $hero
+        ]);
 
         return $this->render('pnj/list.html.twig', [
             'hero' => $hero,
-            'pnjs' => $pnjs,
+            'pnjs' => $pnjs
         ]);
     }
 
-    // Créer un nouveau PNJ pour le héros actif
+    // =========================
+    // CREATE PNJ
+    // =========================
+
     #[Route('/pnj/new', name: 'pnj_new')]
-    public function new(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
-    {
+    public function new(
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
 
         $activeHeroId = $session->get('active_hero_id');
+
         if (!$activeHeroId) {
-            $this->addFlash('warning', 'Veuillez sélectionner un héros avant de créer un PNJ.');
-            return $this->redirectToRoute('app_home');
+
+            $this->addFlash(
+                'warning',
+                'Veuillez sélectionner un héros.'
+            );
+
+            return $this->redirectToRoute('hero_index');
         }
 
         $hero = $em->getRepository(Hero::class)->find($activeHeroId);
-        if (!$hero || $hero->getUser() !== $user) {
-            $this->addFlash('error', 'Héros introuvable ou non autorisé.');
-            return $this->redirectToRoute('app_home');
+
+        if (
+            !$hero ||
+            $hero->getUser() !== $user
+        ) {
+
+            $session->remove('active_hero_id');
+
+            return $this->redirectToRoute('hero_index');
         }
 
+        // =========================
+        // CREATE
+        // =========================
         if ($request->isMethod('POST')) {
+
             $pnj = new Pnj();
-            $pnj->setName($request->request->get('name'))
-                ->setDescription($request->request->get('description'))
-                ->setInformation($request->request->get('information'))
-                ->setLocalisation($request->request->get('localisation'))
-                ->setPersonnalite($request->request->get('personnalite'))
-                ->setCompetence($request->request->get('competence'))
-                ->setHero($hero);
+
+            $pnj->setName(
+                $request->request->get('name')
+            );
+
+            $pnj->setDescription(
+                $request->request->get('description')
+            );
+
+            $pnj->setInformation(
+                $request->request->get('information')
+            );
+
+            $pnj->setLocalisation(
+                $request->request->get('localisation')
+            );
+
+            $pnj->setPersonnalite(
+                $request->request->get('personnalite')
+            );
+
+            $pnj->setCompetence(
+                $request->request->get('competence')
+            );
+
+            $pnj->setHero($hero);
 
             $em->persist($pnj);
             $em->flush();
 
-            $this->addFlash('success', 'PNJ créé avec succès.');
+            $this->addFlash(
+                'success',
+                'PNJ ajouté.'
+            );
+
             return $this->redirectToRoute('pnj_list');
         }
 
         return $this->render('pnj/new.html.twig', [
-            'hero' => $hero,
+            'hero' => $hero
         ]);
     }
 
-    // Éditer un PNJ
-    #[Route('/pnj/edit/{id}', name: 'pnj_edit')]
-    public function edit(int $id, Request $request, EntityManagerInterface $em, SessionInterface $session): Response
-    {
+    // =========================
+    // EDIT PNJ
+    // =========================
+
+    #[Route('/pnj/{id}/edit', name: 'pnj_edit')]
+    public function edit(
+        int $id,
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
+
         $activeHeroId = $session->get('active_hero_id');
+
         if (!$activeHeroId) {
-            $this->addFlash('warning', 'Veuillez sélectionner un héros avant de modifier un PNJ.');
-            return $this->redirectToRoute('app_home');
+
+            return $this->redirectToRoute('hero_index');
         }
 
-        $hero = $em->getRepository(Hero::class)->find($activeHeroId);
         $pnj = $em->getRepository(Pnj::class)->find($id);
 
-        if (!$hero || $hero->getUser() !== $user || !$pnj || !$pnj->getHero() || $pnj->getHero()->getId() !== $activeHeroId) {
-            $this->addFlash('error', 'Accès refusé.');
+        // =========================
+        // SECURITY
+        // =========================
+        if (
+            !$pnj ||
+            !$pnj->getHero() ||
+            $pnj->getHero()->getUser() !== $user ||
+            $pnj->getHero()->getId() !== $activeHeroId
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Accès refusé.'
+            );
+
             return $this->redirectToRoute('pnj_list');
         }
 
+        // =========================
+        // UPDATE
+        // =========================
         if ($request->isMethod('POST')) {
-            $pnj->setName($request->request->get('name'))
-                ->setDescription($request->request->get('description'))
-                ->setInformation($request->request->get('information'))
-                ->setLocalisation($request->request->get('localisation'))
-                ->setPersonnalite($request->request->get('personnalite'))
-                ->setCompetence($request->request->get('competence'));
+
+            $pnj->setName(
+                $request->request->get('name')
+            );
+
+            $pnj->setDescription(
+                $request->request->get('description')
+            );
+
+            $pnj->setInformation(
+                $request->request->get('information')
+            );
+
+            $pnj->setLocalisation(
+                $request->request->get('localisation')
+            );
+
+            $pnj->setPersonnalite(
+                $request->request->get('personnalite')
+            );
+
+            $pnj->setCompetence(
+                $request->request->get('competence')
+            );
 
             $em->flush();
 
-            $this->addFlash('success', 'PNJ mis à jour.');
+            $this->addFlash(
+                'success',
+                'PNJ modifié.'
+            );
+
             return $this->redirectToRoute('pnj_list');
         }
 
         return $this->render('pnj/new.html.twig', [
-            'hero' => $hero,
-            'pnj' => $pnj,
+            'hero' => $pnj->getHero(),
+            'pnj' => $pnj
         ]);
     }
 
-    // Supprimer un PNJ
-    #[Route('/pnj/delete/{id}', name: 'pnj_delete', methods: ['POST'])]
-    public function delete(int $id, Request $request, EntityManagerInterface $em, SessionInterface $session): Response
-    {
+    // =========================
+    // DELETE PNJ
+    // =========================
+
+    #[Route('/pnj/{id}/delete', name: 'pnj_delete', methods: ['POST'])]
+    public function delete(
+        int $id,
+        Request $request,
+        SessionInterface $session,
+        EntityManagerInterface $em
+    ): Response {
+
         $user = $this->getUser();
+
         $activeHeroId = $session->get('active_hero_id');
+
         if (!$activeHeroId) {
-            $this->addFlash('warning', 'Veuillez sélectionner un héros avant de supprimer un PNJ.');
-            return $this->redirectToRoute('app_home');
+
+            return $this->redirectToRoute('hero_index');
         }
 
-        $hero = $em->getRepository(Hero::class)->find($activeHeroId);
         $pnj = $em->getRepository(Pnj::class)->find($id);
 
-        if (!$hero || $hero->getUser() !== $user || !$pnj || !$pnj->getHero() || $pnj->getHero()->getId() !== $activeHeroId) {
-            $this->addFlash('error', 'Accès refusé.');
+        // =========================
+        // SECURITY
+        // =========================
+        if (
+            !$pnj ||
+            !$pnj->getHero() ||
+            $pnj->getHero()->getUser() !== $user ||
+            $pnj->getHero()->getId() !== $activeHeroId
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Accès refusé.'
+            );
+
             return $this->redirectToRoute('pnj_list');
         }
 
-        if (!$this->isCsrfTokenValid('delete'.$pnj->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Token CSRF invalide.');
+        // =========================
+        // CSRF
+        // =========================
+        if (
+            !$this->isCsrfTokenValid(
+                'delete'.$pnj->getId(),
+                $request->request->get('_token')
+            )
+        ) {
+
+            $this->addFlash(
+                'error',
+                'Token invalide.'
+            );
+
             return $this->redirectToRoute('pnj_list');
         }
 
         $em->remove($pnj);
         $em->flush();
 
-        $this->addFlash('success', 'PNJ supprimé.');
+        $this->addFlash(
+            'success',
+            'PNJ supprimé.'
+        );
+
         return $this->redirectToRoute('pnj_list');
     }
 }

@@ -4,10 +4,8 @@ namespace App\Form;
 
 use App\Entity\Hero;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
@@ -16,32 +14,24 @@ class HeroType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'Nom du héros',
-            ])
-            ->add('universe', TextType::class, [
-                'label' => 'Univers',
-                'required' => false,
-            ])
+            ->add('name')
+            ->add('universe')
+            ->add('additionalInfo')
             ->add('photo', FileType::class, [
-                'label' => 'Photo du héros',
-                'mapped' => false,
+                'label' => 'Image du héros',
+                'mapped' => false, // IMPORTANT : pas directement lié à l'entité
                 'required' => false,
                 'constraints' => [
                     new File([
-                        'maxSize' => '5M',
+                        'maxSize' => '10M',
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',
-                            'image/gif',
+                            'image/webp',
                         ],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG, PNG, GIF)',
+                        'mimeTypesMessage' => 'Merci d\'uploader une image valide (JPG, PNG ou WEBP)',
                     ])
                 ],
-            ])
-            ->add('additionalInfo', TextareaType::class, [
-                'label' => 'Informations supplémentaires',
-                'required' => false,
             ]);
     }
 

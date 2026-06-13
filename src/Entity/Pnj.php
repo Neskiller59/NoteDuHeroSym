@@ -33,12 +33,12 @@ class Pnj
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $competence = null;
 
-    // Relation obligatoire avec le héros
-    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: "pnjs")]
-    #[ORM\JoinColumn(nullable: false)]
+    // Relation avec Hero
+    #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: 'pnjs')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Hero $hero = null;
 
-    // ===== Getters & Setters =====
+    // ===== GETTERS / SETTERS =====
 
     public function getId(): ?int
     {
@@ -53,6 +53,7 @@ class Pnj
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -64,6 +65,7 @@ class Pnj
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -75,6 +77,7 @@ class Pnj
     public function setInformation(?string $information): static
     {
         $this->information = $information;
+
         return $this;
     }
 
@@ -86,6 +89,7 @@ class Pnj
     public function setLocalisation(?string $localisation): static
     {
         $this->localisation = $localisation;
+
         return $this;
     }
 
@@ -97,6 +101,7 @@ class Pnj
     public function setPersonnalite(?string $personnalite): static
     {
         $this->personnalite = $personnalite;
+
         return $this;
     }
 
@@ -108,6 +113,7 @@ class Pnj
     public function setCompetence(?string $competence): static
     {
         $this->competence = $competence;
+
         return $this;
     }
 
@@ -116,9 +122,10 @@ class Pnj
         return $this->hero;
     }
 
-    public function setHero(Hero $hero): static
+    public function setHero(?Hero $hero): static
     {
         $this->hero = $hero;
+
         return $this;
     }
 }

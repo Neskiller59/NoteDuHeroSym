@@ -1,50 +1,100 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ competence is defined ? 'Modifier compétence' : 'Nouvelle compétence' }}{% endblock %}
+{% block title %}
+    {{ competence is defined and competence ? 'Modifier compétence' : 'Nouvelle compétence' }}
+{% endblock %}
 
 {% block body %}
+
+{% set heroId = app.session.get('active_hero_id') %}
+
 <div class="container mt-5" style="max-width:700px;">
+
     <h1 class="h2 mb-4">
-        {{ competence is defined ? 'Modifier compétence pour ' ~ hero.name : 'Créer une nouvelle compétence pour ' ~ hero.name }}
+        {% if competence is defined and competence %}
+            Modifier compétence
+        {% else %}
+            Nouvelle compétence
+        {% endif %}
     </h1>
 
+    {# =========================
+       FORM
+       ========================= #}
     <form method="post">
+
         <div class="mb-3">
             <label class="form-label">Nom</label>
-            <input type="text" name="name" class="form-control" value="{{ competence.name ?? '' }}" required>
+            <input type="text"
+                   name="name"
+                   class="form-control"
+                   value="{{ competence.name ?? '' }}"
+                   required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="4">{{ competence.description ?? '' }}</textarea>
+            <textarea name="description"
+                      class="form-control"
+                      rows="4">{{ competence.description ?? '' }}</textarea>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Effet</label>
-            <input type="text" name="effet" class="form-control" value="{{ competence.effet ?? '' }}">
+            <input type="text"
+                   name="effet"
+                   class="form-control"
+                   value="{{ competence.effet ?? '' }}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Origine</label>
-            <input type="text" name="origine" class="form-control" value="{{ competence.origine ?? '' }}">
+            <input type="text"
+                   name="origine"
+                   class="form-control"
+                   value="{{ competence.origine ?? '' }}">
         </div>
 
+        {# =========================
+           ACTIONS
+           ========================= #}
         <button type="submit" class="btn btn-success">
-            {{ competence is defined ? '💾 Enregistrer les modifications' : '💾 Créer la compétence' }}
+            💾 Enregistrer
         </button>
 
-        {# ✅ Bouton Annuler avec heroId #}
-        <a href="{{ path('competence_list', {'heroId': hero.id}) }}" class="btn btn-secondary ms-2">← Annuler</a>
+        {% if heroId %}
+            <a href="{{ path('competence_list', { heroId: heroId }) }}"
+               class="btn btn-secondary ms-2">
+                ← Annuler
+            </a>
+        {% else %}
+            <a href="{{ path('hero_index') }}"
+               class="btn btn-secondary ms-2">
+                ← Annuler
+            </a>
+        {% endif %}
+
     </form>
 
-    {# --- Messages flash --- #}
+    {# =========================
+       FLASH MESSAGES
+       ========================= #}
     {% for label, messages in app.flashes %}
+
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
+
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show mt-3">
+
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
             </div>
+
         {% endfor %}
+
     {% endfor %}
+
 </div>
+
 {% endblock %}

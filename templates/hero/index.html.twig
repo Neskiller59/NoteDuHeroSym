@@ -1,76 +1,193 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Bienvenue, Aventurier{% endblock %}
+{% block title %}Sélection du héros{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
 
-    {% if app.user %}
-        <h1>Bienvenue, {{ app.user.username }}</h1>
-        <p>Voici vos héros :</p>
+<div class="container mt-5">
 
-        {% if heroes|length > 0 %}
-            <div class="row g-3">
+    <h1 class="text-center text-gold mb-5" id="hero-title">
+        ⚔️ Sélectionnez votre héros
+    </h1>
 
-                {% for hero in heroes %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm p-3" style="background-color:#2a2a3f; color:#fff;">
+    {% if heroes|length > 0 %}
 
-                            <h5>{{ hero.name }}</h5>
+        <div class="row g-4">
 
-                            {% if hero.photo %}
-                                <img src="{{ hero.photo }}" alt="{{ hero.name }}" class="img-fluid mb-2 rounded">
-                            {% endif %}
+            {% for hero in heroes %}
 
-                            <p><strong>Univers : </strong>{{ hero.universe ?? 'Inconnu' }}</p>
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="hero-card shadow-lg">
+
+                        {# IMAGE SAFE #}
+                        {% if hero.photo %}
+                            <img src="{{ asset('uploads/' ~ hero.photo) }}"
+                                 class="hero-img"
+                                 alt="{{ hero.name }}">
+                        {% else %}
+                            <img src="{{ asset('images/default-hero.jpg') }}"
+                                 class="hero-img"
+                                 alt="default hero">
+                        {% endif %}
+
+                        <div class="hero-body">
+
+                            <h3 class="hero-name">
+                                {{ hero.name }}
+                            </h3>
+
+                            <div class="hero-universe">
+                                {{ hero.universe ?? 'Univers inconnu' }}
+                            </div>
 
                             {% if hero.additionalInfo %}
-                                <p>{{ hero.additionalInfo }}</p>
+                                <p class="hero-description">
+                                    {{ hero.additionalInfo|length > 120
+                                        ? hero.additionalInfo|slice(0,120) ~ '...'
+                                        : hero.additionalInfo }}
+                                </p>
                             {% endif %}
 
-                            <!-- Boutons d’action -->
-                            <div class="mt-3 d-flex gap-2">
+                            <div class="hero-actions">
 
-                                <!-- Sélectionner -->
-                                <a class="btn btn-primary btn-sm"
-                                   href="{{ path('app_home', { hero_id: hero.id }) }}">
-                                    Sélectionner
+                                {# ✔ SAFE FLOW : sélection + session #}
+                                <a href="{{ path('hero_select', { id: hero.id }) }}"
+                                   class="btn btn-select">
+                                    Entrer dans le jeu
                                 </a>
 
-                                <!-- Inventaire du héros -->
-                                <a class="btn btn-warning btn-sm"
-                                   href="{{ path('hero_inventory', { id: hero.id }) }}">
-                                    Inventaire
-                                </a>
-
-                                <!-- Journal de quête -->
-                                <a class="btn btn-info btn-sm"
-                                   href="{{ path('hero_quests', { id: hero.id }) }}">
-                                    Quêtes
-                                </a>
-
-                                <!-- Supprimer -->
+                                {# DELETE SAFE #}
                                 <form method="POST"
                                       action="{{ path('hero_delete', { id: hero.id }) }}"
                                       onsubmit="return confirm('Supprimer ce héros ?')">
-                                    <input type="hidden" name="_token"
+
+                                    <input type="hidden"
+                                           name="_token"
                                            value="{{ csrf_token('delete' ~ hero.id) }}">
-                                    <button class="btn btn-danger btn-sm">X</button>
+
+                                    <button class="btn btn-delete">
+                                        Supprimer
+                                    </button>
+
                                 </form>
 
                             </div>
 
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
 
-        {% else %}
-            <p>Vous n'avez pas encore de héros. <a href="{{ path('hero_new') }}">Créer un héros</a></p>
-        {% endif %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
 
     {% else %}
-        <p>Vous devez être connecté pour voir vos héros.</p>
+
+        <div class="empty-box">
+
+            <h2>Aucun héros</h2>
+            <p>Crée ton premier héros pour commencer l’aventure.</p>
+
+        </div>
+
     {% endif %}
+
+    <div class="text-center mt-5">
+
+        <a href="{{ path('hero_new') }}"
+           class="btn-create">
+            + Créer un héros
+        </a>
+
+    </div>
+
 </div>
+
+<style>
+
+body {
+    background: radial-gradient(circle at top, #1f1f2e, #0d0d16);
+    color: white;
+}
+
+.text-gold {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.hero-card {
+    background: linear-gradient(145deg, #23233a, #151522);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.hero-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 25px rgba(255,215,0,0.15);
+}
+
+.hero-img {
+    width: 100%;
+    height: 320px;
+    object-fit: contain;
+    background: radial-gradient(circle, #1b1b30, #101018);
+    padding: 15px;
+}
+
+.hero-body {
+    padding: 20px;
+}
+
+.hero-name {
+    color: #ffd700;
+}
+
+.hero-universe {
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-select {
+    flex: 1;
+    background: linear-gradient(45deg, #ffd700, #ffb700);
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-delete {
+    background: transparent;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+.btn-create {
+    display: inline-block;
+    padding: 14px 30px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #ffd700, #ffb700);
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+
+</style>
+
 {% endblock %}

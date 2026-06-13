@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
 use App\Entity\Quest;
 use App\Entity\Inventory;
+use App\Entity\Competence;
 
 #[ORM\Entity(repositoryClass: HeroRepository::class)]
 class Hero
@@ -43,10 +44,14 @@ class Hero
     #[ORM\OneToMany(mappedBy: 'hero', targetEntity: Quest::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $quests;
 
+    #[ORM\OneToMany(mappedBy: 'hero', targetEntity: Competence::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $competences;
+
     public function __construct()
     {
         $this->inventories = new ArrayCollection();
         $this->quests = new ArrayCollection();
+        $this->competences = new ArrayCollection();
         $this->gold = 0;
     }
 
@@ -65,9 +70,7 @@ class Hero
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): self { $this->user = $user; return $this; }
 
-    /**
-     * @return Collection<int, Inventory>
-     */
+    // ===== INVENTORY =====
     public function getInventories(): Collection { return $this->inventories; }
     public function addInventory(Inventory $inventory): static { 
         if (!$this->inventories->contains($inventory)) {
@@ -83,11 +86,8 @@ class Hero
         return $this;
     }
 
-    /**
-     * @return Collection<int, Quest>
-     */
+    // ===== QUEST =====
     public function getQuests(): Collection { return $this->quests; }
-
     public function addQuest(Quest $quest): static {
         if (!$this->quests->contains($quest)) {
             $this->quests->add($quest);
@@ -95,11 +95,25 @@ class Hero
         }
         return $this;
     }
-
     public function removeQuest(Quest $quest): static {
         if ($this->quests->removeElement($quest)) {
-            // ❌ on ne met pas hero à null car la relation est obligatoire
             // La quête sera supprimée automatiquement grâce à orphanRemoval=true
+        }
+        return $this;
+    }
+
+    // ===== COMPETENCE =====
+    public function getCompetences(): Collection { return $this->competences; }
+    public function addCompetence(Competence $competence): static {
+        if (!$this->competences->contains($competence)) {
+            $this->competences->add($competence);
+            $competence->setHero($this);
+        }
+        return $this;
+    }
+    public function removeCompetence(Competence $competence): static {
+        if ($this->competences->removeElement($competence)) {
+            if ($competence->getHero() === $this) $competence->setHero(null);
         }
         return $this;
     }

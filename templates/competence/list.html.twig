@@ -1,71 +1,146 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Compétences de {{ hero.name }}{% endblock %}
+{% block title %}Compétences{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="h3 fw-bold mb-3">Compétences de {{ hero.name }}</h1>
 
+<div class="container mt-5">
+
+    {% set heroId = app.session.get('active_hero_id') %}
+
+    <h1 class="h3 fw-bold mb-3">
+        Compétences
+    </h1>
+
+    {# =========================
+       FLASH MESSAGES
+       ========================= #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# =========================
+       HEADER ACTION
+       ========================= #}
     <div class="d-flex justify-content-end mb-4">
-        {# Créer une nouvelle compétence avec heroId #}
-        <a href="{{ path('competence_new', {'heroId': hero.id}) }}" class="btn btn-primary">
-            ➕ Créer une compétence
-        </a>
+
+        {% if heroId %}
+            <a href="{{ path('competence_new', { heroId: heroId }) }}" class="btn btn-warning shadow-sm">
+                ➕ Créer une compétence
+            </a>
+        {% else %}
+            <span class="text-muted">Sélectionnez un héros</span>
+        {% endif %}
+
     </div>
 
+    {# =========================
+       EMPTY STATE
+       ========================= #}
     {% if competences is empty %}
-        <div class="alert alert-secondary">Aucune compétence trouvée pour ce héros.</div>
-    {% else %}
-        <div class="row g-3">
-            {% for competence in competences %}
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body d-flex flex-column">
-                            <!-- Nom -->
-                            <h5 class="card-title fw-bold" style="word-break: break-word; overflow-wrap: anywhere;">
-                                {{ competence.name }}
-                            </h5>
 
-                            <!-- Description -->
-                            <p class="card-text mb-2" style="white-space: normal; word-break: break-word; overflow-wrap: anywhere;">
+        <div class="alert alert-secondary">
+            Aucune compétence trouvée pour ce héros.
+        </div>
+
+    {% else %}
+
+        <div class="row g-3">
+
+            {% for competence in competences %}
+
+                <div class="col-md-6">
+
+                    <div class="card shadow-sm h-100 bg-dark text-white p-3">
+
+                        <h5 class="fw-bold">
+                            {{ competence.name }}
+                        </h5>
+
+                        {% if competence.description %}
+                            <p class="text-muted">
                                 {{ competence.description }}
                             </p>
+                        {% endif %}
 
-                            <!-- Effet et Origine -->
-                            <div class="mb-3">
-                                {% if competence.effet %}
-                                    <span class="badge bg-info text-dark d-block w-100 mb-1">
-                                        Effet: {{ competence.effet }}
-                                    </span>
-                                {% endif %}
-                                {% if competence.origine %}
-                                    <span class="badge bg-secondary d-block w-100">
-                                        Origine: {{ competence.origine }}
-                                    </span>
-                                {% endif %}
-                            </div>
+                        <div class="mb-3">
 
-                            <!-- Boutons -->
-                            <div class="mt-auto d-flex justify-content-end">
-                                <a href="{{ path('competence_edit', {'heroId': hero.id, 'id': competence.id}) }}" 
-                                   class="btn btn-sm btn-outline-secondary me-2">
-                                     Éditer
-                                </a>
+                            {% if competence.effet %}
+                                <div class="effet">
+                                    Effet : {{ competence.effet }}
+                                </div>
+                            {% endif %}
 
-                                <form method="post" action="{{ path('competence_delete', {'heroId': hero.id, 'id': competence.id}) }}" 
-                                      style="display:inline;" 
-                                      onsubmit="return confirm('Voulez-vous vraiment supprimer cette compétence ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ competence.id) }}">
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">
-                                         Supprimer
-                                    </button>
-                                </form>
-                            </div>
+                            {% if competence.origine %}
+                                <div class="origine">
+                                    Origine : {{ competence.origine }}
+                                </div>
+                            {% endif %}
+
                         </div>
+
+                        {# =========================
+                           ACTIONS
+                           ========================= #}
+                        <div class="d-flex gap-2 mt-auto">
+
+                            <a href="{{ path('competence_edit', { heroId: hero.id, id: competence.id }) }}"
+                               class="btn btn-sm btn-outline-warning w-100">
+                                ✏️
+                            </a>
+
+                            <form method="post"
+                                  action="{{ path('competence_delete', {  heroId: hero.id, id: competence.id  }) }}"
+                                  onsubmit="return confirm('Supprimer cette compétence ?')">
+
+                                <input type="hidden"
+                                       name="_token"
+                                       value="{{ csrf_token('delete' ~ competence.id) }}">
+
+                                <button class="btn btn-sm btn-outline-danger w-100">
+                                    🗑
+                                </button>
+
+                            </form>
+
+                        </div>
+
                     </div>
+
                 </div>
+
             {% endfor %}
+
         </div>
+
     {% endif %}
+
 </div>
+
+<style>
+
+.card {
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+.effet, .origine {
+    font-size: 0.9em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(100, 96, 96, 0.94);
+    margin-bottom: 4px;
+}
+
+</style>
+
 {% endblock %}

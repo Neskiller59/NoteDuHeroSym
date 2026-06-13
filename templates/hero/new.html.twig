@@ -3,35 +3,88 @@
 {% block title %}Créer un héros{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">Créer un nouveau héros</h1>
 
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+<div class="container mt-5" style="max-width:700px;">
+
+    <h1 class="text-center text-warning mb-4">
+        ⚔️ Créer ton héros
+    </h1>
+
+    <div class="card bg-dark text-light shadow p-4">
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
         <div class="mb-3">
-            {{ form_label(form.name) }}
+            {{ form_label(form.name, 'Nom du héros') }}
             {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
             {{ form_errors(form.name) }}
         </div>
 
         <div class="mb-3">
-            {{ form_label(form.universe) }}
+            {{ form_label(form.universe, 'Univers') }}
             {{ form_widget(form.universe, {'attr': {'class': 'form-control'}}) }}
             {{ form_errors(form.universe) }}
         </div>
 
         <div class="mb-3">
-            {{ form_label(form.photo) }}
+            {{ form_label(form.additionalInfo, 'Histoire / Description') }}
+            {{ form_widget(form.additionalInfo, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+            {{ form_errors(form.additionalInfo) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.photo, 'Image du héros') }}
             {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
             {{ form_errors(form.photo) }}
         </div>
 
-        <div class="mb-3">
-            {{ form_label(form.additionalInfo) }}
-            {{ form_widget(form.additionalInfo, {'attr': {'class': 'form-control', 'rows': 4}}) }}
-            {{ form_errors(form.additionalInfo) }}
+        <div class="d-flex justify-content-between mt-4">
+
+            <a href="{{ path('hero_index') }}" class="btn btn-secondary">
+                ← Retour
+            </a>
+
+            <button class="btn btn-warning">
+                ➕ Créer le héros
+            </button>
+
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 mt-3">Créer le héros</button>
-    {{ form_end(form) }}
+        {{ form_end(form) }}
+
+    </div>
+
 </div>
+
+<style>
+
+body {
+    background: radial-gradient(circle at top, #1f1f2e, #0d0d16);
+    color: white;
+}
+
+.card {
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.text-warning {
+    text-shadow: 0 0 10px rgba(255,215,0,0.4);
+}
+
+.form-control {
+    background-color: #1c1c2b;
+    border: 1px solid #333;
+    color: white;
+}
+
+.form-control:focus {
+    background-color: #1c1c2b;
+    color: white;
+    border-color: #ffd700;
+    box-shadow: none;
+}
+
+</style>
+
 {% endblock %}

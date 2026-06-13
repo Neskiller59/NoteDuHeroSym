@@ -1,73 +1,117 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow" style="font-family: 'Uncial Antiqua', serif;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow">
+
     <div class="container-fluid">
 
-        <a class="navbar-brand text-warning" href="{{ path('app_home') }}">🛡️ Notes du héros</a>
+        <a class="navbar-brand text-warning" href="{{ path('hero_index') }}">
+            ⚔️ RPG Heroes
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navMain">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navMain">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% set heroId = app.session.get('active_hero_id') ?? null %}
 
+            <ul class="navbar-nav me-auto">
+
+                {# ================= HERO ================= #}
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}"
-                       href="{{ path('app_home') }}">
-                        Accueil
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'hero_' %}active{% endif %}"
+                       href="{{ path('hero_index') }}">
+                        Héros
                     </a>
                 </li>
 
-                {# Vérifie que selectedHero est défini et non null #}
-                {% if selectedHero is defined and selectedHero %}
+                {# ================= SI HERO ACTIF ================= #}
+                {% if heroId %}
+
                     <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'inventory_' %}active{% endif %}"
-                           href="{{ path('inventory_list', { heroId: selectedHero.id }) }}">
+                        <a class="nav-link" href="{{ path('inventory_list', { heroId: heroId }) }}">
                             Inventaire
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'quest_' %}active{% endif %}"
-                           href="{{ path('quest_index', { heroId: selectedHero.id }) }}">
+                        <a class="nav-link" href="{{ path('quest_index', { heroId: heroId }) }}">
                             Quêtes
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'pnj_' %}active{% endif %}"
-                           href="{{ path('pnj_list', { heroId: selectedHero.id }) }}">
+                        <a class="nav-link" href="{{ path('pnj_list', { heroId: heroId }) }}">
                             PNJ
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'competence_' %}active{% endif %}"
-                           href="{{ path('competence_list', { heroId: selectedHero.id }) }}">
+                        <a class="nav-link" href="{{ path('competence_list', { heroId: heroId }) }}">
                             Compétences
                         </a>
                     </li>
+
+                {% else %}
+
+                    {# ================= MODE LOCK ================= #}
+                    <li class="nav-item">
+                        <span class="nav-link  text-white" >
+                            ⚠️ Sélectionnez un héros pour commencer
+                        </span>
+                    </li>
+
                 {% endif %}
 
             </ul>
 
+            {# ================= USER ================= #}
             <ul class="navbar-nav ms-auto">
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        {% if app.user %}{{ app.user.username }}{% else %}Compte{% endif %}
+
+                    <a class="nav-link dropdown-toggle text-warning"
+                       href="#" data-bs-toggle="dropdown">
+
+                        {{ app.user ? app.user.username : 'Compte' }}
+
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end bg-dark border border-warning">
+
                         {% if app.user %}
-                            <li><a class="dropdown-item text-warning" href="{{ path('app_logout') }}">Déconnexion</a></li>
+
+                            <li>
+                                <a class="dropdown-item text-warning" href="{{ path('hero_index') }}">
+                                    Choisir un héros
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                    Déconnexion
+                                </a>
+                            </li>
+
                         {% else %}
-                            <li><a class="dropdown-item text-warning" href="{{ path('app_login') }}">Connexion</a></li>
-                            <li><a class="dropdown-item text-warning" href="{{ path('app_register') }}">Inscription</a></li>
+
+                            <li>
+                                <a class="dropdown-item text-warning" href="{{ path('app_login') }}">
+                                    Connexion
+                                </a>
+                            </li>
+
                         {% endif %}
+
                     </ul>
+
                 </li>
+
             </ul>
 
         </div>
+
     </div>
 </nav>

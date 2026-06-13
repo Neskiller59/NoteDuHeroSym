@@ -3,60 +3,110 @@
 {% block title %}PNJ de {{ hero.name }}{% endblock %}
 
 {% block body %}
+
 <div class="container mt-4" style="max-width:900px;">
 
+    {# HEADER #}
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <h1 class="h2">PNJ de {{ hero.name }}</h1>
-        <a href="{{ path('pnj_new') }}" class="btn btn-success">➕ Nouveau PNJ</a>
+
+        <a href="{{ path('pnj_new') }}" class="btn btn-success">
+            ➕ Nouveau PNJ
+        </a>
+
     </div>
 
+    {# EMPTY STATE #}
     {% if pnjs is empty %}
-        <div class="alert text-center">Aucun PNJ trouvé pour ce héros.</div>
+
+        <div class="alert text-center">
+            Aucun PNJ trouvé pour ce héros.
+        </div>
+
     {% else %}
+
         {% for pnj in pnjs %}
-            <div class="card mb-3 shadow-sm" style="background-color:#2a2a3f; color:#fff;">
-                <div class="card-body d-flex justify-content-between align-items-start">
+
+            <div class="card mb-3 shadow-sm"
+                 style="background-color:#2a2a3f; color:#fff;">
+
+                <div class="card-body d-flex justify-content-between">
+
+                    {# LEFT CONTENT #}
                     <div>
-                        <h3 class="card-title">{{ pnj.name }}</h3>
-                        <p class="mb-1"><strong>Description :</strong> {{ pnj.description }}</p>
+
+                        <h3 class="card-title">
+                            {{ pnj.name }}
+                        </h3>
+
+                        <p class="mb-1">
+                            <strong>Description :</strong>
+                            {{ pnj.description }}
+                        </p>
+
                         {% if pnj.information %}
-                            <p class="mb-1"><strong>Informations :</strong> {{ pnj.information }}</p>
+                            <p class="mb-1">
+                                <strong>Informations :</strong>
+                                {{ pnj.information }}
+                            </p>
                         {% endif %}
+
                         {% if pnj.localisation %}
-                            <p class="mb-1"><strong>Localisation :</strong> {{ pnj.localisation }}</p>
+                            <p class="mb-1">
+                                <strong>Localisation :</strong>
+                                {{ pnj.localisation }}
+                            </p>
                         {% endif %}
+
                         {% if pnj.personnalite %}
-                            <p class="mb-1"><strong>Personnalité :</strong> {{ pnj.personnalite }}</p>
+                            <p class="mb-1">
+                                <strong>Personnalité :</strong>
+                                {{ pnj.personnalite }}
+                            </p>
                         {% endif %}
+
                         {% if pnj.competence %}
-                            <p class="mb-1"><strong>Compétence :</strong> {{ pnj.competence }}</p>
+                            <p class="mb-1">
+                                <strong>Compétence :</strong>
+                                {{ pnj.competence }}
+                            </p>
                         {% endif %}
+
                     </div>
 
-                    <div class="d-flex align-items-start" style="white-space: nowrap;">
-                        <a href="{{ path('pnj_edit', {'id': pnj.id}) }}" 
-                           class="btn btn-warning btn-sm me-2" title="Modifier">✏️</a>
+                    {# ACTIONS #}
+                    <div class="d-flex align-items-start gap-2">
 
-                        <form method="post" action="{{ path('pnj_delete', {'id': pnj.id}) }}" 
-                              style="display:inline;" 
+                        <a href="{{ path('pnj_edit', { id: pnj.id }) }}"
+                           class="btn btn-warning btn-sm">
+                            ✏️
+                        </a>
+
+                        <form method="post"
+                              action="{{ path('pnj_delete', { id: pnj.id }) }}"
                               onsubmit="return confirm('Supprimer ce PNJ ?');">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pnj.id) }}">
-                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">🗑️</button>
+
+                            <input type="hidden"
+                                   name="_token"
+                                   value="{{ csrf_token('delete' ~ pnj.id) }}">
+
+                            <button class="btn btn-danger btn-sm">
+                                🗑️
+                            </button>
+
                         </form>
+
                     </div>
+
                 </div>
+
             </div>
+
         {% endfor %}
+
     {% endif %}
 
-    {# Messages flash #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endfor %}
 </div>
+
 {% endblock %}

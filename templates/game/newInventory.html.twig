@@ -1,46 +1,245 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ item is defined ? 'Modifier un objet' : 'Ajouter un objet' }}
+    {{ item is defined
+        ? 'Modifier un objet'
+        : 'Ajouter un objet' }}
 {% endblock %}
 
 {% block body %}
-<div class="container mt-4" style="max-width:600px;">
 
-    <h1 class="mb-4">{{ item is defined ? 'Modifier un objet' : 'Ajouter un objet' }} pour {{ hero.name }}</h1>
+<div class="container mt-5"
+     style="max-width:700px;">
 
-    <form method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Nom de l’objet</label>
-            <input type="text" id="name" name="name" class="form-control" required value="{{ item.name ?? '' }}">
+    {# =========================
+       CARD
+       ========================= #}
+
+    <div class="inventory-form-card shadow-lg">
+
+        {# TITLE #}
+
+        <div class="text-center mb-4">
+
+            <h1 class="text-warning">
+
+                {% if item is defined %}
+                    ✏️ Modifier un objet
+                {% else %}
+                    ➕ Ajouter un objet
+                {% endif %}
+
+            </h1>
+
+            <p class="text-light">
+
+                Inventaire de
+                <strong>{{ hero.name }}</strong>
+
+            </p>
+
         </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" class="form-control" required>{{ item.description ?? '' }}</textarea>
-        </div>
+        {# =========================
+           FORM
+           ========================= #}
 
-        <div class="mb-3">
-            <label for="additionalInfo" class="form-label">Infos supplémentaires (facultatif)</label>
-            <textarea id="additionalInfo" name="additionalInfo" class="form-control">{{ item.additionalInfo ?? '' }}</textarea>
-        </div>
+        <form method="POST">
 
-        <button type="submit" class="btn btn-success">
-            {{ item is defined ? '💾 Enregistrer les modifications' : '➕ Ajouter à l’inventaire' }}
-        </button>
+            {# NAME #}
 
-        <a href="{{ path('inventory_list') }}" class="btn btn-secondary ms-2">← Retour à l’inventaire</a>
+            <div class="mb-4">
 
-    </form>
+                <label for="name"
+                       class="form-label text-light">
 
-    {# --- Messages de succès ou d'erreur --- #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    Nom de l’objet
+
+                </label>
+
+                <input type="text"
+                       id="name"
+                       name="name"
+                       class="form-control custom-input"
+                       required
+                       value="{{ item.name ?? '' }}">
+
             </div>
+
+            {# DESCRIPTION #}
+
+            <div class="mb-4">
+
+                <label for="description"
+                       class="form-label text-light">
+
+                    Description
+
+                </label>
+
+                <textarea id="description"
+                          name="description"
+                          rows="4"
+                          class="form-control custom-input"
+                          required>{{ item.description ?? '' }}</textarea>
+
+            </div>
+
+            {# ADDITIONAL INFO #}
+
+            <div class="mb-4">
+
+                <label for="additionalInfo"
+                       class="form-label text-light">
+
+                    Informations supplémentaires
+
+                </label>
+
+                <textarea id="additionalInfo"
+                          name="additionalInfo"
+                          rows="3"
+                          class="form-control custom-input">{{ item.additionalInfo ?? '' }}</textarea>
+
+            </div>
+
+            {# =========================
+               ACTIONS
+               ========================= #}
+
+            <div class="d-flex gap-3 justify-content-center mt-4">
+
+                <button type="submit"
+                        class="btn btn-success btn-lg">
+
+                    {% if item is defined %}
+                        💾 Sauvegarder
+                    {% else %}
+                        ➕ Ajouter
+                    {% endif %}
+
+                </button>
+
+                <a href="{{ path('inventory_list') }}"
+                   class="btn btn-secondary btn-lg">
+
+                    ← Retour
+
+                </a>
+
+            </div>
+
+        </form>
+
+        {# =========================
+           FLASH MESSAGES
+           ========================= #}
+
+        {% for label, messages in app.flashes %}
+
+            {% for message in messages %}
+
+                <div class="alert alert-{{ label == 'error'
+                    ? 'danger'
+                    : label }} mt-4">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
         {% endfor %}
-    {% endfor %}
+
+    </div>
+
 </div>
+
+{# =========================
+   STYLE RPG
+   ========================= #}
+
+<style>
+
+body {
+
+    background:
+        linear-gradient(
+            135deg,
+            #161622,
+            #1f1f35
+        );
+}
+
+/* CARD */
+
+.inventory-form-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #2a2a3f,
+            #1f1f30
+        );
+
+    border-radius: 18px;
+
+    padding: 40px;
+
+    color: white;
+
+    border: 1px solid rgba(255,215,0,0.15);
+
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.4);
+}
+
+/* INPUTS */
+
+.custom-input {
+
+    background: #101018;
+
+    border: 1px solid #3a3a5c;
+
+    color: white;
+}
+
+.custom-input:focus {
+
+    background: #151520;
+
+    color: white;
+
+    border-color: #ffd700;
+
+    box-shadow:
+        0 0 10px rgba(255,215,0,0.3);
+}
+
+/* BUTTONS */
+
+.btn-success {
+
+    background: linear-gradient(
+        45deg,
+        #28a745,
+        #3bc15a
+    );
+
+    border: none;
+}
+
+.btn-success:hover {
+
+    transform: scale(1.03);
+}
+
+.btn-secondary:hover {
+
+    transform: scale(1.03);
+}
+
+</style>
+
 {% endblock %}

@@ -20,17 +20,19 @@ class Competence
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $effet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $origine = null;
 
     #[ORM\ManyToOne(targetEntity: Hero::class, inversedBy: "competences")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Hero $hero = null;
 
-    // ===== Getters & Setters =====
+    // =========================
+    // GETTERS / SETTERS
+    // =========================
 
     public function getId(): ?int
     {
