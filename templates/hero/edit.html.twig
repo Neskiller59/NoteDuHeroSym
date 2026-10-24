@@ -1,0 +1,260 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ hero.name }}{% endblock %}
+
+{% block body %}
+<div class="rpg-container container mt-5">
+
+    <h1 class="rpg-title mb-4">✏️ Modifier mon héros</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <div class="rpg-card p-4">
+
+        {{ form_start(form, {
+            attr: {
+                enctype: 'multipart/form-data'
+            }
+        }) }}
+
+        <div class="hero-photo-section mb-4">
+
+            <p class="mb-2">Portrait du héros</p>
+
+            <div class="hero-photo-wrapper">
+
+                <img
+                    id="hero-photo-preview"
+                    src="{{ hero.photo ? asset('uploads/' ~ hero.photo) : '' }}"
+                    alt="Portrait de {{ hero.name }}"
+                    class="hero-photo-preview {{ hero.photo ? '' : 'd-none' }}"
+                >
+
+                <div
+                    id="hero-photo-placeholder"
+                    class="hero-photo-placeholder {{ hero.photo ? 'd-none' : '' }}"
+                >
+                    🧙
+                </div>
+
+                <label
+                    for="{{ form.photo.vars.id }}"
+                    class="hero-photo-edit"
+                    title="Choisir une nouvelle image"
+                    aria-label="Choisir une nouvelle image"
+                >
+                    <i class="fas fa-pencil-alt"></i>
+                </label>
+
+            </div>
+
+            <p class="text-muted small mt-2">
+                Clique sur le crayon pour changer l'image.
+            </p>
+
+            {{ form_widget(form.photo, {
+                attr: {
+                    class: 'd-none',
+                    accept: 'image/jpeg,image/png,image/webp'
+                }
+            }) }}
+
+            {{ form_errors(form.photo) }}
+
+            <div id="selected-photo-name" class="small mt-2"></div>
+
+            {% if hero.photo %}
+                <div class="form-check mt-3">
+
+                    {{ form_widget(form.removePhoto, {
+                        attr: {
+                            class: 'form-check-input'
+                        }
+                    }) }}
+
+                    {{ form_label(form.removePhoto, 'Supprimer la photo actuelle', {
+                        label_attr: {
+                            class: 'form-check-label'
+                        }
+                    }) }}
+
+                    {{ form_errors(form.removePhoto) }}
+
+                </div>
+            {% endif %}
+
+        </div>
+
+        <hr>
+
+        {{ form_row(form.name, {
+            label: 'Nom du héros'
+        }) }}
+
+        {{ form_row(form.universe, {
+            label: 'Univers'
+        }) }}
+
+        {{ form_row(form.additionalInfo, {
+            label: 'Informations complémentaires'
+        }) }}
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+
+            <button type="submit" class="btn btn-warning">
+                Enregistrer les modifications
+            </button>
+
+            <a href="{{ path('hero_index') }}" class="btn btn-secondary">
+                Annuler
+            </a>
+
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+</div>
+
+<style>
+.hero-photo-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.hero-photo-preview,
+.hero-photo-placeholder {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+}
+
+.hero-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.hero-photo-edit {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    background: rgba(25, 25, 25, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.hero-photo-edit:hover {
+    opacity: 1;
+    background: rgba(25, 25, 25, 0.92);
+}
+
+#selected-photo-name {
+    overflow-wrap: anywhere;
+}
+</style>
+
+<script>
+(function () {
+    function initHeroPhotoPreview() {
+        const input = document.getElementById('{{ form.photo.vars.id }}');
+        const preview = document.getElementById('hero-photo-preview');
+        const placeholder = document.getElementById('hero-photo-placeholder');
+        const filename = document.getElementById('selected-photo-name');
+
+        const removeCheckbox = document.getElementById(
+            '{{ form.removePhoto.vars.id|default("") }}'
+        );
+
+        if (!input || !preview || !placeholder || !filename) {
+            console.error(
+                'Aperçu photo : un élément HTML est introuvable.',
+                { input, preview, placeholder, filename }
+            );
+            return;
+        }
+
+        let previousPreviewUrl = null;
+
+        input.addEventListener('change', function () {
+            const file = input.files && input.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const allowedTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('Choisis une image JPG, PNG ou WEBP.');
+                input.value = '';
+                filename.textContent = '';
+                return;
+            }
+
+            if (previousPreviewUrl) {
+                URL.revokeObjectURL(previousPreviewUrl);
+            }
+
+            previousPreviewUrl = URL.createObjectURL(file);
+
+            preview.src = previousPreviewUrl;
+            preview.classList.remove('d-none');
+            placeholder.classList.add('d-none');
+
+            filename.textContent = 'Nouvelle image : ' + file.name;
+
+            if (removeCheckbox) {
+                removeCheckbox.checked = false;
+            }
+        });
+
+        if (removeCheckbox) {
+            removeCheckbox.addEventListener('change', function () {
+                if (removeCheckbox.checked && !input.files.length) {
+                    preview.classList.add('d-none');
+                    placeholder.classList.remove('d-none');
+
+                    filename.textContent =
+                        'La photo sera supprimée à l’enregistrement.';
+                } else if (!removeCheckbox.checked && !input.files.length) {
+                    const hasExistingPhoto =
+                        preview.getAttribute('src') !== '';
+
+                    preview.classList.toggle('d-none', !hasExistingPhoto);
+                    placeholder.classList.toggle('d-none', hasExistingPhoto);
+
+                    filename.textContent = '';
+                }
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroPhotoPreview);
+    } else {
+        initHeroPhotoPreview();
+    }
+})();
+</script>
+{% endblock %}

@@ -1,9 +1,11 @@
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion à la Guilde{% endblock %}
 
 {% block body %}
-    <div class="login-container">
+<div class="login-container">
+
     {% if error %}
         <div class="alert alert-danger">
             {{ error.messageKey|trans(error.messageData, 'security') }}
@@ -12,8 +14,11 @@
 
     {% if app.user %}
         <div class="logged-info">
-            Connecté en tant que {{ app.user.userIdentifier }} 
-            <a href="{{ path('app_logout') }}" class="text-warning text-decoration-underline">Se déconnecter</a>
+            Connecté en tant que {{ app.user.userIdentifier }}
+            <a href="{{ path('app_logout') }}"
+               class="text-warning text-decoration-underline">
+                Se déconnecter
+            </a>
         </div>
     {% endif %}
 
@@ -21,22 +26,38 @@
 
     <form method="post" action="{{ path('app_login') }}">
         <label for="username">Nom d'aventurier</label>
-        <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
+        <input type="text"
+               value="{{ last_username }}"
+               name="_username"
+               id="username"
+               class="form-control"
+               autocomplete="username"
+               required
+               autofocus>
 
         <label for="password">Mot de passe secret</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+        <input type="password"
+               name="_password"
+               id="password"
+               class="form-control"
+               autocomplete="current-password"
+               required>
 
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <input type="hidden"
+               name="_csrf_token"
+               value="{{ csrf_token('authenticate') }}">
 
-        {# Optionnel : se souvenir de moi #}
-        {#
-        <div class="form-check mt-3">
-            <input type="checkbox" class="form-check-input" name="_remember_me" id="_remember_me">
-            <label class="form-check-label" for="_remember_me">Se souvenir de moi</label>
-        </div>
-        #}
-
-        <button class="btn btn-login" type="submit">Entrer dans la Guilde</button>
+        <button class="btn btn-login" type="submit">
+            Entrer dans la Guilde
+        </button>
     </form>
+
+    <div class="register-link mt-4">
+        <p>Pas encore membre de la Guilde ?</p>
+        <a href="{{ path('app_register') }}" class="btn btn-register">
+            Créer mon compte
+        </a>
+    </div>
+
 </div>
 {% endblock %}

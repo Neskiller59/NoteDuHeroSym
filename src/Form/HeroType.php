@@ -6,6 +6,7 @@ use App\Entity\Hero;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
@@ -19,7 +20,7 @@ class HeroType extends AbstractType
             ->add('additionalInfo')
             ->add('photo', FileType::class, [
                 'label' => 'Image du héros',
-                'mapped' => false, // IMPORTANT : pas directement lié à l'entité
+                'mapped' => false,
                 'required' => false,
                 'constraints' => [
                     new File([
@@ -29,9 +30,14 @@ class HeroType extends AbstractType
                             'image/png',
                             'image/webp',
                         ],
-                        'mimeTypesMessage' => 'Merci d\'uploader une image valide (JPG, PNG ou WEBP)',
-                    ])
+                        'mimeTypesMessage' => 'Choisis une image JPG, PNG ou WEBP.',
+                    ]),
                 ],
+            ])
+            ->add('removePhoto', CheckboxType::class, [
+                'label' => 'Supprimer la photo actuelle',
+                'mapped' => false,
+                'required' => false,
             ]);
     }
 
